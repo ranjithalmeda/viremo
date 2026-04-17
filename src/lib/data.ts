@@ -7,13 +7,16 @@ export async function getEntriesForUser(userId: string) {
   });
 }
 
-export async function getPublicProfile(username: string) {
-  return prisma.user.findUnique({
-    where: { username },
+export async function getPublicProfile(identifier: string) {
+  return prisma.user.findFirst({
+    where: {
+      OR: [{ publicId: identifier.toUpperCase() }, { username: identifier }],
+    },
     select: {
       id: true,
       name: true,
       image: true,
+      publicId: true,
       username: true,
       createdAt: true,
       entries: {

@@ -11,8 +11,8 @@ type ProfilePageProps = {
 };
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
-  const { username } = await params;
-  const profile = await getPublicProfile(username);
+  const { username: identifier } = await params;
+  const profile = await getPublicProfile(identifier);
 
   if (!profile) {
     notFound();
@@ -55,6 +55,9 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 everything in between.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
+                <div className="pill text-slate-700">
+                  Share ID {profile.publicId}
+                </div>
                 <div className="pill text-slate-700">
                   {entries.length} {entries.length === 1 ? "title" : "titles"}
                 </div>

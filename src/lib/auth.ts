@@ -64,6 +64,7 @@ export const authOptions = {
           email: user.email ?? email,
           name: user.name,
           image: user.image,
+          publicId: user.publicId,
           username: user.username,
         };
       },
@@ -84,6 +85,7 @@ export const authOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.sub = user.id;
+        token.publicId = user.publicId ?? null;
         token.username = user.username ?? null;
       }
 
@@ -92,6 +94,8 @@ export const authOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.sub ?? "";
+        session.user.publicId =
+          typeof token.publicId === "string" ? token.publicId : null;
         session.user.username =
           typeof token.username === "string" ? token.username : null;
       }

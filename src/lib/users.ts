@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 
 import { Prisma } from "@prisma/client";
 
+import { createPublicId } from "@/src/lib/public-id";
 import { prisma } from "@/src/lib/prisma";
 
 type CreateUserInput = {
@@ -34,21 +35,23 @@ export async function createUserWithUniqueUsername(data: CreateUserInput) {
       return await prisma.user.create({
         data: {
           ...data,
+          publicId: createPublicId(),
           username,
         },
       });
     } catch (error) {
-      const isUsernameConflict =
+      const isUniqueConflict =
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2002" &&
         Array.isArray(error.meta?.target) &&
-        error.meta.target.includes("username");
+        (error.meta.target.includes("username") ||
+          error.meta.target.includes("publicId"));
 
-      if (!isUsernameConflict) {
+      if (!isUniqueConflict) {
         throw error;
       }
     }
   }
 
-  throw new Error("Unable to create a unique username for this account.");
+  throw new Error("Unable to create a unique public profile identifier.");
 }

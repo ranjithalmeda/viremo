@@ -4,6 +4,7 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
+import { ProfileSearchForm } from "@/src/components/profile-search-form";
 import { cn } from "@/src/lib/utils";
 
 const navItems = [
@@ -35,7 +36,7 @@ export function SiteHeader() {
           </Link>
         </div>
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-center">
           <nav className="flex flex-wrap items-center gap-2">
             {navItems.map((item) => {
               const active =
@@ -60,14 +61,16 @@ export function SiteHeader() {
             })}
           </nav>
 
+          <ProfileSearchForm compact />
+
           {status === "authenticated" ? (
             <div className="flex flex-wrap items-center gap-3">
-              {session.user.username ? (
+              {session.user.publicId ? (
                 <Link
-                  href={`/profile/${session.user.username}`}
+                  href={`/profile/${session.user.publicId}`}
                   className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-sky-300 hover:text-sky-800"
                 >
-                  @{session.user.username}
+                  ID {session.user.publicId}
                 </Link>
               ) : null}
               <button

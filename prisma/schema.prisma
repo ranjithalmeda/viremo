@@ -13,6 +13,7 @@ model User {
   emailVerified DateTime?
   image         String?
   passwordHash  String?   @db.Text
+  publicId      String    @unique
   username      String?   @unique
   createdAt     DateTime  @default(now())
   entries       Entry[]

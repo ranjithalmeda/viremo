@@ -9,6 +9,7 @@ import {
 } from "@/src/components/add-entry-modal";
 import { EntryCard } from "@/src/components/entry-card";
 import { FilterPills } from "@/src/components/filter-pills";
+import { ProfileSearchForm } from "@/src/components/profile-search-form";
 import { StatsBar } from "@/src/components/stats-bar";
 import type { EntryFilter, EntryRecord } from "@/src/lib/watchlist";
 
@@ -125,6 +126,8 @@ export function DashboardClient({ initialEntries }: DashboardClientProps) {
         </div>
 
         <StatsBar entries={entries} />
+
+        <ProfileSearchForm />
 
         <div className="glass rounded-[1.6rem] p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

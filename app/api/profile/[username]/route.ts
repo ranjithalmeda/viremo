@@ -9,8 +9,8 @@ type ProfileRouteContext = {
 };
 
 export async function GET(_: Request, context: ProfileRouteContext) {
-  const { username } = await context.params;
-  const profile = await getPublicProfile(username);
+  const { username: identifier } = await context.params;
+  const profile = await getPublicProfile(identifier);
 
   if (!profile) {
     return NextResponse.json({ error: "Profile not found." }, { status: 404 });

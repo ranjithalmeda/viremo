@@ -1,12 +1,14 @@
 import { randomUUID } from "node:crypto";
 
 import { pgPool } from "@/src/lib/postgres";
+import { createPublicId } from "@/src/lib/public-id";
 
 export type AuthUserRecord = {
   id: string;
   email: string | null;
   name: string | null;
   image: string | null;
+  publicId: string;
   username: string | null;
   passwordHash: string | null;
 };
@@ -23,6 +25,7 @@ function mapAuthUser(row: Record<string, unknown>): AuthUserRecord {
     email: row.email === null ? null : String(row.email),
     name: row.name === null ? null : String(row.name),
     image: row.image === null ? null : String(row.image),
+    publicId: String(row.publicId),
     username: row.username === null ? null : String(row.username),
     passwordHash:
       row.passwordHash === null ? null : String(row.passwordHash),
@@ -31,7 +34,7 @@ function mapAuthUser(row: Record<string, unknown>): AuthUserRecord {
 
 export async function getAuthUserByEmail(email: string) {
   const result = await pgPool.query(
-    `select id, email, name, image, username, "passwordHash"
+    `select id, email, name, image, "publicId", username, "passwordHash"
      from "User"
      where email = $1
      limit 1`,
@@ -63,9 +66,9 @@ export async function createCredentialUser(input: {
 
     try {
       const result = await pgPool.query(
-        `insert into "User" ("id", "email", "name", "image", "emailVerified", "passwordHash", "username", "createdAt")
-         values ($1, $2, $3, $4, $5, $6, $7, now())
-         returning id, email, name, image, username, "passwordHash"`,
+        `insert into "User" ("id", "email", "name", "image", "emailVerified", "passwordHash", "publicId", "username", "createdAt")
+         values ($1, $2, $3, $4, $5, $6, $7, $8, now())
+         returning id, email, name, image, "publicId", username, "passwordHash"`,
         [
           randomUUID().replace(/-/g, "").slice(0, 25),
           input.email,
@@ -73,6 +76,7 @@ export async function createCredentialUser(input: {
           null,
           null,
           input.passwordHash,
+          createPublicId(),
           username,
         ],
       );
@@ -88,14 +92,16 @@ export async function createCredentialUser(input: {
           ? String(error.constraint)
           : "";
 
-      const isUsernameConflict =
-        maybeCode === "23505" && maybeConstraint.includes("username");
+      const isUniqueConflict =
+        maybeCode === "23505" &&
+        (maybeConstraint.includes("username") ||
+          maybeConstraint.includes("publicId"));
 
-      if (!isUsernameConflict) {
+      if (!isUniqueConflict) {
         throw error;
       }
     }
   }
 
-  throw new Error("Unable to create a unique username for this account.");
+  throw new Error("Unable to create a unique public profile identifier.");
 }
