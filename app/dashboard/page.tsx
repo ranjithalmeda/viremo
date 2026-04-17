@@ -21,7 +21,14 @@ export default async function DashboardPage() {
 
   return (
     <div className="shell py-10 sm:py-14">
-      <DashboardClient initialEntries={initialEntries} />
+      <DashboardClient
+        initialEntries={initialEntries}
+        profile={{
+          publicId: session.user.publicId ?? null,
+          username: session.user.username ?? null,
+          name: session.user.name ?? null,
+        }}
+      />
     </div>
   );
 }

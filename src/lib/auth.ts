@@ -9,9 +9,8 @@ import { verifyPassword } from "@/src/lib/password";
 import { prisma } from "@/src/lib/prisma";
 import { createUserWithUniqueUsername } from "@/src/lib/users";
 
-const fallbackGitHubId = process.env.GITHUB_ID || "missing-github-id";
-const fallbackGitHubSecret =
-  process.env.GITHUB_SECRET || "missing-github-secret";
+const githubId = process.env.GITHUB_ID;
+const githubSecret = process.env.GITHUB_SECRET;
 
 const baseAdapter = PrismaAdapter(prisma);
 const adapter: Adapter = {
@@ -69,10 +68,14 @@ export const authOptions = {
         };
       },
     }),
-    GitHubProvider({
-      clientId: fallbackGitHubId,
-      clientSecret: fallbackGitHubSecret,
-    }),
+    ...(githubId && githubSecret
+      ? [
+          GitHubProvider({
+            clientId: githubId,
+            clientSecret: githubSecret,
+          }),
+        ]
+      : []),
   ],
   pages: {
     signIn: "/login",

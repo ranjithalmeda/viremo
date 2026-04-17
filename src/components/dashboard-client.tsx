@@ -10,14 +10,23 @@ import {
 import { EntryCard } from "@/src/components/entry-card";
 import { FilterPills } from "@/src/components/filter-pills";
 import { ProfileSearchForm } from "@/src/components/profile-search-form";
+import { ShareProfileCard } from "@/src/components/share-profile-card";
 import { StatsBar } from "@/src/components/stats-bar";
 import type { EntryFilter, EntryRecord } from "@/src/lib/watchlist";
 
 type DashboardClientProps = {
   initialEntries: EntryRecord[];
+  profile: {
+    publicId: string | null;
+    username: string | null;
+    name: string | null;
+  };
 };
 
-export function DashboardClient({ initialEntries }: DashboardClientProps) {
+export function DashboardClient({
+  initialEntries,
+  profile,
+}: DashboardClientProps) {
   const [entries, setEntries] = useState(initialEntries);
   const [filter, setFilter] = useState<EntryFilter>("ALL");
   const [modalOpen, setModalOpen] = useState(false);
@@ -127,7 +136,14 @@ export function DashboardClient({ initialEntries }: DashboardClientProps) {
 
         <StatsBar entries={entries} />
 
-        <ProfileSearchForm />
+        <div className="grid gap-5 xl:grid-cols-[1.25fr_0.95fr]">
+          <ShareProfileCard
+            publicId={profile.publicId}
+            username={profile.username}
+            displayName={profile.name}
+          />
+          <ProfileSearchForm />
+        </div>
 
         <div className="glass rounded-[1.6rem] p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
