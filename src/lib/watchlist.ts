@@ -25,8 +25,8 @@ export const typeLabels: Record<EntryTypeValue, string> = {
 };
 
 export const statusLabels: Record<WatchStatusValue, string> = {
-  WATCHING: "Watching",
-  COMPLETED: "Completed",
+  WATCHING: "Watched",
+  COMPLETED: "Finished",
   DROPPED: "Dropped",
 };
 

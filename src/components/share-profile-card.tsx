@@ -40,12 +40,12 @@ export function ShareProfileCard({
     <section className="glass-strong rounded-[1.8rem] p-6 sm:p-7">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-3">
-          <div className="pill w-fit text-sky-900">Share your watchlist</div>
+          <div className="pill theme-faint w-fit">Share your watchlist</div>
           <div>
-            <h2 className="text-2xl font-semibold text-slate-950">
+            <h2 className="theme-heading text-2xl font-semibold">
               Your public profile is ready.
             </h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+            <p className="theme-muted mt-2 max-w-2xl text-sm leading-6">
               Give friends your share ID or profile link so they can open your
               watchlist and reviews without needing your login details.
             </p>
@@ -55,7 +55,7 @@ export function ShareProfileCard({
         {profilePath ? (
           <Link
             href={profilePath}
-            className="rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:border-sky-300 hover:text-sky-900"
+            className="theme-button-secondary rounded-full px-5 py-3 text-sm font-semibold"
           >
             Open public profile
           </Link>
@@ -63,25 +63,25 @@ export function ShareProfileCard({
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-[1.5rem] border border-white/70 bg-white/70 p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+        <div className="theme-soft-panel rounded-[1.5rem] p-5">
+          <p className="theme-muted text-xs font-semibold uppercase tracking-[0.2em]">
             Share ID
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-3">
-            <p className="font-display text-3xl font-semibold tracking-[0.18em] text-slate-950">
+            <p className="theme-heading font-display text-3xl font-semibold tracking-[0.18em]">
               {publicId || "Pending"}
             </p>
             {publicId ? (
               <button
                 type="button"
                 onClick={() => copyValue(publicId, "Share ID")}
-                className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-sky-300 hover:text-sky-900"
+                className="theme-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
               >
                 Copy ID
               </button>
             ) : null}
           </div>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
+          <p className="theme-muted mt-3 text-sm leading-6">
             Best for quick sharing in messages or social bios.
           </p>
         </div>
@@ -113,9 +113,9 @@ export function ShareProfileCard({
       </div>
 
       {feedback ? (
-        <p className="mt-4 text-sm font-medium text-emerald-700">{feedback}</p>
+        <p className="theme-status-positive mt-4 text-sm font-medium">{feedback}</p>
       ) : (
-        <p className="mt-4 text-sm text-slate-500">
+        <p className="theme-muted mt-4 text-sm">
           People can open your profile by share ID or username.
         </p>
       )}

@@ -111,28 +111,28 @@ export function LoginCard({ error }: LoginCardProps) {
   const busy = isSubmitting || isPending;
 
   return (
-    <div className="glass-strong mx-auto w-full max-w-md rounded-[2rem] p-8 sm:p-10">
-      <div className="pill mb-5 text-sky-900">Email login</div>
-      <h1 className="text-4xl font-semibold text-slate-950">
+    <div className="glass-strong mx-auto w-full max-w-md rounded-[2rem] border border-slate-200/70 bg-white/95 p-8 shadow-xl sm:p-10">
+      <span className="inline-flex rounded-full bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-700">
+        Email login
+      </span>
+      <h1 className="theme-heading mt-5 text-4xl font-semibold">
         {mode === "signin" ? "Welcome back." : "Create your account."}
       </h1>
-      <p className="mt-4 text-base leading-7 text-slate-600">
+      <p className="theme-muted mt-4 text-base leading-7">
         {mode === "signin"
           ? "Use your email and password to open the diary and keep building the UI flow."
           : "Create a normal login for now so we can keep shipping the app while GitHub auth stays paused."}
       </p>
 
-      <div className="mt-6 flex rounded-full border border-slate-200 bg-white p-1">
+      <div className="mt-6 grid grid-cols-2 gap-2 rounded-full border border-slate-200/70 bg-slate-50 p-1 text-sm font-semibold text-slate-700">
         <button
           type="button"
           onClick={() => {
             setMode("signin");
             setMessage(null);
           }}
-          className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold ${
-            mode === "signin"
-              ? "bg-slate-950 text-white"
-              : "text-slate-600 hover:text-slate-950"
+          className={`rounded-full px-4 py-2 ${
+            mode === "signin" ? "bg-white text-slate-900 shadow-sm" : "text-slate-600"
           }`}
         >
           Sign in
@@ -143,10 +143,8 @@ export function LoginCard({ error }: LoginCardProps) {
             setMode("signup");
             setMessage(null);
           }}
-          className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold ${
-            mode === "signup"
-              ? "bg-slate-950 text-white"
-              : "text-slate-600 hover:text-slate-950"
+          className={`rounded-full px-4 py-2 ${
+            mode === "signup" ? "bg-white text-slate-900 shadow-sm" : "text-slate-600"
           }`}
         >
           Create account
@@ -156,20 +154,20 @@ export function LoginCard({ error }: LoginCardProps) {
       <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
         {mode === "signup" ? (
           <label className="block">
-            <span className="mb-2 block text-sm font-semibold text-slate-700">
+            <span className="theme-text mb-2 block text-sm font-semibold">
               Name
             </span>
             <input
               value={name}
               onChange={(event) => setName(event.target.value)}
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+              className="theme-input w-full rounded-2xl px-4 py-3 text-sm outline-none"
               placeholder="Optional display name"
             />
           </label>
         ) : null}
 
         <label className="block">
-          <span className="mb-2 block text-sm font-semibold text-slate-700">
+          <span className="theme-text mb-2 block text-sm font-semibold">
             Email
           </span>
           <input
@@ -177,13 +175,13 @@ export function LoginCard({ error }: LoginCardProps) {
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+            className="theme-input w-full rounded-2xl px-4 py-3 text-sm outline-none"
             placeholder="you@example.com"
           />
         </label>
 
         <label className="block">
-          <span className="mb-2 block text-sm font-semibold text-slate-700">
+          <span className="theme-text mb-2 block text-sm font-semibold">
             Password
           </span>
           <input
@@ -192,13 +190,13 @@ export function LoginCard({ error }: LoginCardProps) {
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+            className="theme-input w-full rounded-2xl px-4 py-3 text-sm outline-none"
             placeholder="At least 8 characters"
           />
         </label>
 
         {message ? (
-          <div className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm font-medium leading-6 text-slate-700">
+          <div className="theme-soft-panel theme-text rounded-2xl px-4 py-3 text-sm font-medium leading-6">
             {message}
           </div>
         ) : null}
@@ -206,7 +204,7 @@ export function LoginCard({ error }: LoginCardProps) {
         <button
           type="submit"
           disabled={busy}
-          className="inline-flex w-full items-center justify-center rounded-2xl bg-slate-950 px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-slate-900/10 hover:-translate-y-0.5 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+          className="theme-button-neutral inline-flex w-full items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-70"
         >
           {busy
             ? mode === "signin"
@@ -221,13 +219,13 @@ export function LoginCard({ error }: LoginCardProps) {
       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
         <Link
           href="/"
-          className="inline-flex w-full items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:border-sky-300 hover:text-sky-900"
+          className="theme-button-secondary inline-flex w-full items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold"
         >
           Back to home
         </Link>
         <Link
           href="/"
-          className="inline-flex w-full items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:border-sky-300 hover:text-sky-900"
+          className="theme-button-secondary inline-flex w-full items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold"
         >
           See product overview
         </Link>

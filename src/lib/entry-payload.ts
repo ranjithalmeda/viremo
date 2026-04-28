@@ -119,7 +119,7 @@ export function parseEntryPayload(body: unknown): ParseResult {
   if (!watchStatuses.includes(body.status as WatchStatusValue)) {
     return {
       success: false,
-      error: "Status must be Watching, Completed, or Dropped.",
+      error: "Status must be Watched, Finished, or Dropped.",
     };
   }
 

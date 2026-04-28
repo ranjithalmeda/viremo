@@ -35,11 +35,11 @@ export function ProfileSearchForm({
           value={value}
           onChange={(event) => setValue(event.target.value)}
           placeholder="Find by username or ID"
-          className="min-w-0 flex-1 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+          className="theme-input min-w-0 flex-1 rounded-full px-4 py-2 text-sm outline-none"
         />
         <button
           type="submit"
-          className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
+          className="theme-button-neutral rounded-full px-4 py-2 text-sm font-semibold"
         >
           Find
         </button>
@@ -49,13 +49,13 @@ export function ProfileSearchForm({
 
   return (
     <div className="glass rounded-[1.8rem] p-6 sm:p-7">
-      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
+      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--accent-strong)]">
         Find a profile
       </p>
-      <h2 className="mt-3 text-2xl font-semibold text-slate-950">
+      <h2 className="theme-heading mt-3 text-2xl font-semibold">
         Jump to someone&apos;s public watchlist.
       </h2>
-      <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">
+      <p className="theme-muted mt-2 max-w-xl text-sm leading-6">
         Enter a username like <span className="font-semibold">almeda</span> or
         a share ID like <span className="font-semibold">A7K2P9</span> to open a
         public watchlist.
@@ -68,21 +68,21 @@ export function ProfileSearchForm({
           value={value}
           onChange={(event) => setValue(event.target.value)}
           placeholder="Username or 6-character share ID"
-          className="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+          className="theme-input min-w-0 flex-1 rounded-2xl px-4 py-3 text-sm outline-none"
         />
         <button
           type="submit"
-          className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800"
+          className="theme-button-neutral rounded-2xl px-5 py-3 text-sm font-semibold"
         >
           Open profile
         </button>
       </form>
       <div className="mt-4 flex flex-wrap gap-2">
-        <div className="pill text-slate-700">Search by username</div>
-        <div className="pill text-slate-700">Search by share ID</div>
+        <div className="pill theme-text">Search by username</div>
+        <div className="pill theme-text">Search by share ID</div>
       </div>
       {error ? (
-        <p className="mt-3 text-sm font-medium text-rose-600">{error}</p>
+        <p className="mt-3 text-sm font-medium text-rose-400">{error}</p>
       ) : null}
     </div>
   );

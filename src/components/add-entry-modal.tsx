@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import type { EntryRecord, EntryTypeValue, WatchStatusValue } from "@/src/lib/watchlist";
-import { entryTypes, watchStatuses } from "@/src/lib/watchlist";
+import { entryTypes, formatStatus, watchStatuses } from "@/src/lib/watchlist";
 
 export type EntryDraft = {
   title: string;
@@ -65,27 +65,30 @@ export function AddEntryModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 py-8 backdrop-blur-sm">
-      <div className="glass-strong w-full max-w-2xl rounded-[2rem] p-6 sm:p-8">
-        <div className="flex items-start justify-between gap-4">
+      <div className="glass-strong w-full max-w-2xl rounded-[2rem] border border-slate-200/70 bg-white/95 p-6 shadow-2xl sm:p-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="pill text-sky-900">
+            <p className="pill theme-faint">
               {isEditing ? "Update entry" : "Add a title"}
             </p>
-            <h2 className="mt-4 text-3xl font-semibold text-slate-950">
+            <h2 className="theme-heading mt-4 text-3xl font-semibold">
               {isEditing ? "Refine your diary entry" : "Capture what you watched"}
             </h2>
+            <p className="theme-muted mt-3 text-sm leading-6">
+              Keep your watch history accurate with a title, rating, status, and notes.
+            </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:border-slate-300"
+            className="theme-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
           >
             Close
           </button>
         </div>
 
         <form
-          className="mt-6 grid gap-4 sm:grid-cols-2"
+          className="mt-8 grid gap-4 sm:grid-cols-2"
           onSubmit={async (event) => {
             event.preventDefault();
             setSubmitting(true);
@@ -98,7 +101,7 @@ export function AddEntryModal({
           }}
         >
           <label className="sm:col-span-2">
-            <span className="mb-2 block text-sm font-semibold text-slate-700">
+            <span className="theme-text mb-2 block text-sm font-semibold">
               Title
             </span>
             <input
@@ -107,13 +110,13 @@ export function AddEntryModal({
               onChange={(event) =>
                 setDraft((current) => ({ ...current, title: event.target.value }))
               }
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+              className="theme-input w-full rounded-2xl px-4 py-3 text-sm outline-none"
               placeholder="Naruto, Interstellar, Arcane..."
             />
           </label>
 
           <label>
-            <span className="mb-2 block text-sm font-semibold text-slate-700">
+            <span className="theme-text mb-2 block text-sm font-semibold">
               Type
             </span>
             <select
@@ -124,7 +127,7 @@ export function AddEntryModal({
                   type: event.target.value as EntryTypeValue,
                 }))
               }
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+              className="theme-input w-full rounded-2xl px-4 py-3 text-sm outline-none"
             >
               {entryTypes.map((type) => (
                 <option key={type} value={type}>
@@ -135,7 +138,7 @@ export function AddEntryModal({
           </label>
 
           <label>
-            <span className="mb-2 block text-sm font-semibold text-slate-700">
+            <span className="theme-text mb-2 block text-sm font-semibold">
               Status
             </span>
             <select
@@ -146,18 +149,18 @@ export function AddEntryModal({
                   status: event.target.value as WatchStatusValue,
                 }))
               }
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+              className="theme-input w-full rounded-2xl px-4 py-3 text-sm outline-none"
             >
               {watchStatuses.map((status) => (
                 <option key={status} value={status}>
-                  {status}
+                  {formatStatus(status)}
                 </option>
               ))}
             </select>
           </label>
 
           <label>
-            <span className="mb-2 block text-sm font-semibold text-slate-700">
+            <span className="theme-text mb-2 block text-sm font-semibold">
               Rating
             </span>
             <input
@@ -171,13 +174,13 @@ export function AddEntryModal({
                   rating: event.target.value ? Number(event.target.value) : null,
                 }))
               }
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+              className="theme-input w-full rounded-2xl px-4 py-3 text-sm outline-none"
               placeholder="1-5"
             />
           </label>
 
           <label>
-            <span className="mb-2 block text-sm font-semibold text-slate-700">
+            <span className="theme-text mb-2 block text-sm font-semibold">
               Poster URL
             </span>
             <input
@@ -188,13 +191,13 @@ export function AddEntryModal({
                   poster: event.target.value || null,
                 }))
               }
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+              className="theme-input w-full rounded-2xl px-4 py-3 text-sm outline-none"
               placeholder="Optional poster image URL"
             />
           </label>
 
           <label className="sm:col-span-2">
-            <span className="mb-2 block text-sm font-semibold text-slate-700">
+            <span className="theme-text mb-2 block text-sm font-semibold">
               Notes
             </span>
             <textarea
@@ -203,7 +206,7 @@ export function AddEntryModal({
               onChange={(event) =>
                 setDraft((current) => ({ ...current, notes: event.target.value }))
               }
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+              className="theme-input w-full rounded-2xl px-4 py-3 text-sm outline-none"
               placeholder="Favorite character, episode count, why you dropped it, what surprised you..."
             />
           </label>
@@ -212,14 +215,14 @@ export function AddEntryModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:border-slate-300"
+              className="theme-button-secondary rounded-full px-5 py-3 text-sm font-semibold"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="theme-button-neutral rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
             >
               {submitting
                 ? "Saving..."

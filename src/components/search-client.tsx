@@ -3,7 +3,7 @@
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
 
 import type { EntryTypeValue } from "@/src/lib/watchlist";
-import { formatType } from "@/src/lib/watchlist";
+import { formatStatus, formatType } from "@/src/lib/watchlist";
 
 type SearchResult = {
   tmdbId: number;
@@ -130,40 +130,42 @@ export function SearchClient() {
 
   return (
     <section className="space-y-8">
-      <div className="flex flex-col gap-4">
-        <div className="pill w-fit text-emerald-800">TMDB powered</div>
-        <h1 className="text-4xl font-semibold text-slate-950 sm:text-5xl">
-          Search titles and drop them straight into your diary.
-        </h1>
-        <p className="max-w-2xl text-base leading-7 text-slate-600">
-          This route keeps your TMDB key on the server. Search movies and TV
-          titles, tweak the type if it should count as anime, then save it in
-          one click.
-        </p>
-      </div>
+      <div className="space-y-4 rounded-[2rem] border border-slate-200/70 bg-white/95 p-8 shadow-xl">
+        <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-700">
+          TMDB powered
+        </div>
+        <div className="space-y-4">
+          <h1 className="theme-heading text-4xl font-semibold sm:text-5xl">
+            Search titles and add them to your diary.
+          </h1>
+          <p className="theme-muted max-w-2xl text-base leading-7">
+            Keep your TMDB key on the server, search all media types, and quickly save movies, shows, or anime into your watch history.
+          </p>
+        </div>
 
-      <div className="glass rounded-[1.8rem] p-5 sm:p-6">
-        <label className="block">
-          <span className="mb-3 block text-sm font-semibold text-slate-700">
-            Search TMDB
-          </span>
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Try Interstellar, Naruto, Arcane..."
-            className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 text-base text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
-          />
-        </label>
+        <div className="glass rounded-[1.8rem] p-5 sm:p-6">
+          <label className="block">
+            <span className="theme-text mb-3 block text-sm font-semibold">
+              Search TMDB
+            </span>
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Try Interstellar, Naruto, Arcane..."
+              className="theme-input w-full rounded-2xl px-5 py-4 text-base outline-none"
+            />
+          </label>
+        </div>
       </div>
 
       {emptyState ? (
-        <div className="glass-strong rounded-[2rem] p-10 text-center text-base text-slate-600">
+        <div className="glass-strong theme-muted rounded-[2rem] p-10 text-center text-base">
           {emptyState}
         </div>
       ) : null}
 
       {results.length ? (
-        <div className="grid gap-5 lg:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-2">
           {results.map((result) => {
             const selection = states[result.tmdbId] ?? {
               type: result.type,
@@ -173,10 +175,10 @@ export function SearchClient() {
             return (
               <article
                 key={result.tmdbId}
-                className="glass overflow-hidden rounded-[1.75rem]"
+                className="rounded-[1.8rem] border border-slate-200/70 bg-white/95 shadow-sm"
               >
                 <div className="grid gap-5 p-5 sm:grid-cols-[150px_1fr]">
-                  <div className="overflow-hidden rounded-[1.4rem] bg-[linear-gradient(160deg,#11365f_0%,#1e6bb8_50%,#0f766e_100%)]">
+                  <div className="overflow-hidden rounded-[1.5rem] bg-slate-950">
                     {result.poster ? (
                       <img
                         src={result.poster}
@@ -184,7 +186,7 @@ export function SearchClient() {
                         className="aspect-[3/4] h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="flex aspect-[3/4] items-center justify-center text-4xl font-bold text-white/85">
+                      <div className="flex aspect-[3/4] items-center justify-center bg-slate-800 text-4xl font-bold text-white/80">
                         {result.title.trim().charAt(0).toUpperCase() || "W"}
                       </div>
                     )}
@@ -192,23 +194,23 @@ export function SearchClient() {
 
                   <div className="space-y-4">
                     <div>
-                      <h2 className="text-2xl font-semibold text-slate-950">
+                      <h2 className="theme-heading text-2xl font-semibold">
                         {result.title}
                       </h2>
-                      <p className="mt-1 text-sm text-slate-500">
+                      <p className="theme-muted mt-1 text-sm">
                         {formatType(selection.type)}
                         {result.year ? ` | ${result.year}` : ""}
                         {result.mediaType ? ` | ${result.mediaType}` : ""}
                       </p>
                     </div>
 
-                    <p className="text-sm leading-6 text-slate-600">
+                    <p className="theme-muted text-sm leading-6">
                       {result.overview || "No overview was returned for this title."}
                     </p>
 
                     <div className="grid gap-3 sm:grid-cols-2">
                       <label>
-                        <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                        <span className="theme-muted mb-2 block text-xs font-semibold uppercase tracking-[0.18em]">
                           Save as
                         </span>
                         <select
@@ -222,7 +224,7 @@ export function SearchClient() {
                               },
                             }))
                           }
-                          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+                          className="theme-input w-full rounded-2xl px-4 py-3 text-sm outline-none"
                         >
                           <option value="MOVIE">Movie</option>
                           <option value="SERIES">Series</option>
@@ -231,8 +233,8 @@ export function SearchClient() {
                       </label>
 
                       <label>
-                        <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                          Initial status
+                        <span className="theme-muted mb-2 block text-xs font-semibold uppercase tracking-[0.18em]">
+                          Diary status
                         </span>
                         <select
                           value={selection.status}
@@ -241,16 +243,15 @@ export function SearchClient() {
                               ...current,
                               [result.tmdbId]: {
                                 ...selection,
-                                status: event.target
-                                  .value as PerResultState["status"],
+                                status: event.target.value as PerResultState["status"],
                               },
                             }))
                           }
-                          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+                          className="theme-input w-full rounded-2xl px-4 py-3 text-sm outline-none"
                         >
-                          <option value="WATCHING">Watching</option>
-                          <option value="COMPLETED">Completed</option>
-                          <option value="DROPPED">Dropped</option>
+                          <option value="WATCHING">{formatStatus("WATCHING")}</option>
+                          <option value="COMPLETED">{formatStatus("COMPLETED")}</option>
+                          <option value="DROPPED">{formatStatus("DROPPED")}</option>
                         </select>
                       </label>
                     </div>
@@ -259,9 +260,25 @@ export function SearchClient() {
                       type="button"
                       onClick={() => addToDiary(result)}
                       disabled={added[result.tmdbId]}
-                      className="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-emerald-700"
+                      className="theme-button-primary w-full rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      {added[result.tmdbId] ? "Added to diary" : "Add to diary"}
+                      {added[result.tmdbId] ? "Added" : "Add to diary"}
+                    </button>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+                      disabled={added[result.tmdbId]}
+                      className="theme-button-neutral rounded-full px-5 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:bg-emerald-700"
+                    >
+                      {added[result.tmdbId] ? "Logged to diary" : "Log to diary"}
                     </button>
                   </div>
                 </div>

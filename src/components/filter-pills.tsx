@@ -18,7 +18,7 @@ export function FilterPills({ filter, onChange }: FilterPillsProps) {
   const items: EntryFilter[] = ["ALL", ...entryTypes, ...watchStatuses];
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-col gap-2">
       {items.map((item) => {
         const label =
           item === "ALL"
@@ -33,10 +33,10 @@ export function FilterPills({ filter, onChange }: FilterPillsProps) {
             type="button"
             onClick={() => onChange(item)}
             className={cn(
-              "rounded-full px-4 py-2 text-sm font-semibold",
+              "w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold",
               filter === item
-                ? "bg-slate-950 text-white"
-                : "border border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-800",
+                ? "theme-button-neutral"
+                : "theme-button-secondary",
             )}
           >
             {label}

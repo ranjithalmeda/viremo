@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { LoginCard } from "@/src/components/login-card";
+import { SiteLogo } from "@/src/components/site-logo";
 import { authOptions } from "@/src/lib/auth";
 
 type LoginPageProps = {
@@ -20,38 +21,41 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   return (
     <div className="shell py-16 sm:py-20">
-      <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="space-y-6">
-          <div className="pill text-emerald-800">Private dashboard + public profile</div>
-          <h1 className="max-w-2xl text-5xl font-semibold leading-tight text-slate-950 sm:text-6xl">
-            Keep every title in one place, from comfort rewatches to current
-            obsessions.
-          </h1>
-          <p className="max-w-xl text-lg leading-8 text-slate-600">
-            We are pausing GitHub OAuth for now and using a normal email login
-            so the product flow stays unblocked while we finish the UI.
-          </p>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="glass rounded-[1.5rem] p-5">
-              <p className="text-sm font-semibold text-slate-900">Track</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Add movies, series, and anime with ratings, notes, posters, and statuses.
-              </p>
+      <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-center">
+        <div className="space-y-8">
+          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm">
+            <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-tr from-violet-500 to-blue-500" />
+            Sign in to your watch diary
+          </div>
+
+          <div className="space-y-6 rounded-[2rem] border border-slate-200/80 bg-white/95 p-10 shadow-xl">
+            <div className="flex items-center gap-4">
+              <SiteLogo className="w-[220px] sm:w-[260px]" />
             </div>
-            <div className="glass rounded-[1.5rem] p-5">
-              <p className="text-sm font-semibold text-slate-900">Manage</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Edit or delete entries any time through the protected CRUD flow.
-              </p>
-            </div>
-            <div className="glass rounded-[1.5rem] p-5">
-              <p className="text-sm font-semibold text-slate-900">Share</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Turn your watch history into a clean public profile when auth is live.
-              </p>
+            <h1 className="theme-heading max-w-2xl text-5xl font-semibold leading-tight tracking-[-0.04em] sm:text-6xl">
+              A cleaner way to track what you watch.
+            </h1>
+            <p className="theme-muted max-w-xl text-lg leading-8">
+              Log titles quickly, keep notes, and publish your watch profile.
+              The new interface is built around better visibility and faster navigation.
+            </p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-3xl border border-slate-200/80 bg-slate-50 p-5">
+                <p className="font-semibold text-slate-900">Fast input</p>
+                <p className="theme-muted mt-2 text-sm leading-6">
+                  Add or update entries with fewer steps and clearer feedback.
+                </p>
+              </div>
+              <div className="rounded-3xl border border-slate-200/80 bg-slate-50 p-5">
+                <p className="font-semibold text-slate-900">Smart sharing</p>
+                <p className="theme-muted mt-2 text-sm leading-6">
+                  Your public profile is built to show your favorites first.
+                </p>
+              </div>
             </div>
           </div>
         </div>
+
         <LoginCard error={error} />
       </div>
     </div>
