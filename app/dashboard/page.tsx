@@ -20,7 +20,7 @@ export default async function DashboardPage() {
   }));
 
   return (
-    <div className="shell py-10 sm:py-14">
+    <div className="w-full px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
       <DashboardClient
         initialEntries={initialEntries}
         profile={{

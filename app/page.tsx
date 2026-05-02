@@ -10,8 +10,8 @@ const features = [
     description: "Log movies, series, and anime with ratings, notes, and watch status.",
   },
   {
-    title: "Search with TMDB",
-    description: "Browse verified metadata and add titles directly to your diary.",
+    title: "Search with TMDB and Books",
+    description: "Browse verified metadata from movies, shows, and books, then add titles directly to your diary.",
   },
   {
     title: "Share your shelf",
@@ -48,7 +48,7 @@ export default async function Home() {
               Track your watch history with clarity and confidence.
             </h1>
             <p className="theme-muted max-w-2xl text-lg leading-8">
-              Viremo helps you organize every watched title, keep quick notes,
+              Viremo helps you organize every Watching title, keep quick notes,
               and share a public shelf that feels curated, not cluttered.
             </p>
 

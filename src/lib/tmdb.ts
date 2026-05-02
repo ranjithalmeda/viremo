@@ -1,6 +1,8 @@
 import { type EntryTypeValue, typeFromMediaType } from "@/src/lib/watchlist";
 
 export type TmdbSearchResult = {
+  id: string;
+  source: "tmdb";
   tmdbId: number;
   title: string;
   type: EntryTypeValue;
@@ -56,6 +58,8 @@ export async function searchTmdb(query: string): Promise<TmdbSearchResult[]> {
     .filter((item) => item.media_type === "movie" || item.media_type === "tv")
     .slice(0, 12)
     .map((item) => ({
+      id: `tmdb-${item.id}`,
+      source: "tmdb",
       tmdbId: item.id,
       title: item.title || item.name || "Untitled",
       type: typeFromMediaType(item.media_type),

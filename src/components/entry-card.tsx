@@ -73,7 +73,13 @@ export function EntryCard({ entry, onEdit, onDelete }: EntryCardProps) {
         </div>
 
         <div className="flex items-center justify-between gap-3 text-sm text-slate-500">
-          <div>{entry.tmdbId ? `TMDB #${entry.tmdbId}` : "Manual entry"}</div>
+          <div>
+            {entry.tmdbId
+              ? `TMDB #${entry.tmdbId}`
+              : entry.type === "BOOK"
+              ? "Book entry"
+              : "Manual entry"}
+          </div>
           <div className="rounded-full border border-slate-200/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]">
             Diary card
           </div>

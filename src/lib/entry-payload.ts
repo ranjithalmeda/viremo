@@ -112,14 +112,14 @@ export function parseEntryPayload(body: unknown): ParseResult {
   if (!entryTypes.includes(body.type as EntryTypeValue)) {
     return {
       success: false,
-      error: "Type must be Movie, Series, or Anime.",
+      error: "Type must be Movie, Series, Anime, or Book.",
     };
   }
 
   if (!watchStatuses.includes(body.status as WatchStatusValue)) {
     return {
       success: false,
-      error: "Status must be Watched, Finished, or Dropped.",
+      error: "Status must be Watching, Finished, or Dropped.",
     };
   }
 

@@ -48,7 +48,7 @@ export function DashboardClient({
   const recentEntries = filteredEntries.slice(0, 5);
   const posterEntries = filteredEntries.slice(0, 6);
   const libraryEntries = filteredEntries.slice(0, 6);
-  const watchedCount = entries.filter((entry) => entry.status === "WATCHING").length;
+  const WatchingCount = entries.filter((entry) => entry.status === "WATCHING").length;
   const finishedCount = entries.filter((entry) => entry.status === "COMPLETED").length;
   const droppedCount = entries.filter((entry) => entry.status === "DROPPED").length;
   const profileIdentifier = profile.publicId || profile.username;
@@ -163,13 +163,13 @@ export function DashboardClient({
                     }}
                     className="theme-button-primary w-full rounded-2xl px-4 py-3 text-sm font-semibold"
                   >
-                    Add watched title
+                    Add Watching title
                   </button>
                   <Link
                     href="/search"
                     className="theme-button-secondary inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold"
                   >
-                    Search TMDB
+                    Search titles
                   </Link>
                 </div>
               </div>
@@ -334,7 +334,7 @@ export function DashboardClient({
                   <div className="mt-5 rounded-[1.75rem] border border-slate-200/80 bg-slate-50 p-8 text-center">
                     <h3 className="text-2xl font-semibold text-slate-950">No entries yet</h3>
                     <p className="mt-3 text-sm leading-7 text-slate-600">
-                      Start by logging the movies, series, or anime you already watched.
+                      Start by logging the movies, series, or anime you already Watching.
                     </p>
                   </div>
                 )}
@@ -391,7 +391,7 @@ export function DashboardClient({
                     <p className="mt-1 text-sm text-slate-500">Finished</p>
                   </div>
                   <div className="rounded-[1.5rem] border border-slate-200/80 bg-white p-4 text-center">
-                    <p className="text-3xl font-semibold text-slate-950">{watchedCount}</p>
+                    <p className="text-3xl font-semibold text-slate-950">{WatchingCount}</p>
                     <p className="mt-1 text-sm text-slate-500">Watching</p>
                   </div>
                 </div>
@@ -409,7 +409,7 @@ export function DashboardClient({
                   Share your shelf
                 </h3>
                 <p className="mt-3 text-sm leading-7 text-slate-600">
-                  Share your watched archive with friends using your public profile link.
+                  Share your Watching archive with friends using your public profile link.
                 </p>
                 <div className="mt-5 rounded-[1.5rem] border border-slate-200/80 bg-slate-50 p-4">
                   <p className="text-xs uppercase tracking-[0.18em] text-slate-500">

@@ -18,7 +18,7 @@ export function StatsBar({ entries }: { entries: EntryRecord[] }) {
       value: entries.filter((entry) => entry.status === "COMPLETED").length,
     },
     {
-      label: "Watched",
+      label: "Watching",
       value: entries.filter((entry) => entry.status === "WATCHING").length,
     },
     { label: "Avg. rating", value: averageRating },

@@ -40,6 +40,7 @@ enum EntryType {
   MOVIE
   SERIES
   ANIME
+  BOOK
 }
 
 enum WatchStatus {

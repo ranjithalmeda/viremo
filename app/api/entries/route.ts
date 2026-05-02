@@ -30,12 +30,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: parsed.error }, { status: 400 });
   }
 
-  const entry = await prisma.entry.create({
-    data: {
-      userId: session.user.id,
-      ...parsed.data,
-    },
-  });
+  try {
+    const entry = await prisma.entry.create({
+      data: {
+        user: { connect: { id: session.user.id } },
+        ...parsed.data,
+      },
+    });
 
-  return NextResponse.json(entry, { status: 201 });
+    return NextResponse.json(entry, { status: 201 });
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Unable to create entry. Please try again later.";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }

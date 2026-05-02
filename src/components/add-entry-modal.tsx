@@ -72,7 +72,7 @@ export function AddEntryModal({
               {isEditing ? "Update entry" : "Add a title"}
             </p>
             <h2 className="theme-heading mt-4 text-3xl font-semibold">
-              {isEditing ? "Refine your diary entry" : "Capture what you watched"}
+              {isEditing ? "Refine your diary entry" : "Capture what you Watching"}
             </h2>
             <p className="theme-muted mt-3 text-sm leading-6">
               Keep your watch history accurate with a title, rating, status, and notes.

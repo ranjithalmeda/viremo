@@ -1,4 +1,4 @@
-export const entryTypes = ["MOVIE", "SERIES", "ANIME"] as const;
+export const entryTypes = ["MOVIE", "SERIES", "ANIME", "BOOK"] as const;
 export const watchStatuses = ["WATCHING", "COMPLETED", "DROPPED"] as const;
 
 export type EntryTypeValue = (typeof entryTypes)[number];
@@ -22,10 +22,11 @@ export const typeLabels: Record<EntryTypeValue, string> = {
   MOVIE: "Movie",
   SERIES: "Series",
   ANIME: "Anime",
+  BOOK: "Book",
 };
 
 export const statusLabels: Record<WatchStatusValue, string> = {
-  WATCHING: "Watched",
+  WATCHING: "Watching",
   COMPLETED: "Finished",
   DROPPED: "Dropped",
 };
@@ -33,7 +34,9 @@ export const statusLabels: Record<WatchStatusValue, string> = {
 export function typeFromMediaType(
   mediaType?: string | null,
 ): EntryTypeValue {
-  return mediaType === "movie" ? "MOVIE" : "SERIES";
+  if (mediaType === "movie") return "MOVIE";
+  if (mediaType === "tv") return "SERIES";
+  return "BOOK";
 }
 
 export function formatType(type: EntryTypeValue) {
