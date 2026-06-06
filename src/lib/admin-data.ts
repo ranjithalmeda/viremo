@@ -1,6 +1,17 @@
-import type { Role, TicketCategory, TicketStatus } from "@prisma/client";
+import type { Prisma, Role, TicketCategory, TicketStatus } from "@prisma/client";
 
 import { prisma } from "@/src/lib/prisma";
+
+export type AdminComment = Prisma.ProfileCommentGetPayload<{
+  include: {
+    profileUser: {
+      select: { id: true; name: true; username: true; publicId: true };
+    };
+    author: {
+      select: { id: true; name: true; username: true; publicId: true };
+    };
+  };
+}>;
 
 export async function getAdminStats() {
   const [totalUsers, totalEntries, totalMessages, totalTickets, recentSignups] =
@@ -109,7 +120,7 @@ export async function deleteAdminEntry(entryId: string) {
   });
 }
 
-export async function getAdminComments() {
+export async function getAdminComments(): Promise<AdminComment[]> {
   return prisma.profileComment.findMany({
     orderBy: { createdAt: "desc" },
     include: {

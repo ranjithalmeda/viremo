@@ -1,5 +1,5 @@
 import { AdminDeleteButton } from "@/src/components/admin/admin-delete-button";
-import { getAdminComments } from "@/src/lib/admin-data";
+import { getAdminComments, type AdminComment } from "@/src/lib/admin-data";
 import { requireAdminPage } from "@/src/lib/admin";
 
 function displayUser(user: { name: string | null; username: string | null; publicId: string }) {
@@ -8,7 +8,7 @@ function displayUser(user: { name: string | null; username: string | null; publi
 
 export default async function AdminCommentsPage() {
   await requireAdminPage();
-  const comments = await getAdminComments();
+  const comments: AdminComment[] = await getAdminComments();
 
   return (
     <div className="w-full px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
