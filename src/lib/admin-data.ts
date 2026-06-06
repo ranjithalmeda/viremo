@@ -13,7 +13,81 @@ export type AdminComment = Prisma.ProfileCommentGetPayload<{
   };
 }>;
 
-export async function getAdminStats() {
+export type AdminSignup = Prisma.UserGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    username: true;
+    email: true;
+    image: true;
+    role: true;
+    isBanned: true;
+    createdAt: true;
+  };
+}>;
+
+export type AdminStats = {
+  totals: {
+    users: number;
+    entries: number;
+    messages: number;
+    tickets: number;
+  };
+  recentSignups: AdminSignup[];
+};
+
+export type AdminUser = Prisma.UserGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    username: true;
+    email: true;
+    image: true;
+    role: true;
+    isBanned: true;
+    createdAt: true;
+    _count: {
+      select: {
+        entries: true;
+        sentMessages: true;
+        receivedMessages: true;
+        tickets: true;
+      };
+    };
+  };
+}>;
+
+export type AdminEntry = Prisma.EntryGetPayload<{
+  include: {
+    user: {
+      select: {
+        id: true;
+        name: true;
+        username: true;
+        email: true;
+        publicId: true;
+      };
+    };
+  };
+}>;
+
+export type AdminTicket = Prisma.TicketGetPayload<{
+  include: {
+    user: {
+      select: {
+        id: true;
+        name: true;
+        username: true;
+        email: true;
+        publicId: true;
+      };
+    };
+  };
+}>;
+
+export type UserTicket = Prisma.TicketGetPayload<Record<string, never>>;
+
+export async function getAdminStats(): Promise<AdminStats> {
   const [totalUsers, totalEntries, totalMessages, totalTickets, recentSignups] =
     await Promise.all([
       prisma.user.count(),
@@ -47,7 +121,7 @@ export async function getAdminStats() {
   };
 }
 
-export async function getAdminUsers() {
+export async function getAdminUsers(): Promise<AdminUser[]> {
   return prisma.user.findMany({
     orderBy: { createdAt: "desc" },
     select: {
@@ -96,7 +170,7 @@ export async function deleteAdminUser(userId: string) {
   });
 }
 
-export async function getAdminEntries() {
+export async function getAdminEntries(): Promise<AdminEntry[]> {
   return prisma.entry.findMany({
     orderBy: { updatedAt: "desc" },
     include: {
@@ -141,7 +215,7 @@ export async function deleteAdminComment(commentId: string) {
   });
 }
 
-export async function getAdminTickets() {
+export async function getAdminTickets(): Promise<AdminTicket[]> {
   return prisma.ticket.findMany({
     orderBy: { createdAt: "desc" },
     include: {
@@ -182,7 +256,7 @@ export async function updateAdminTicket(
   });
 }
 
-export async function getTicketsForUser(userId: string) {
+export async function getTicketsForUser(userId: string): Promise<UserTicket[]> {
   return prisma.ticket.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },

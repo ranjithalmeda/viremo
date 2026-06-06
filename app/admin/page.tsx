@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 import { AdminAiLimitForm } from "@/src/components/admin/admin-ai-limit-form";
-import { getProDailyAiLimit } from "@/src/lib/ai-limits";
-import { getAdminStats } from "@/src/lib/admin-data";
+import { getAdminStats, type AdminSignup } from "@/src/lib/admin-data";
 import { requireAdminPage } from "@/src/lib/admin";
+import { getProDailyAiLimit } from "@/src/lib/ai-limits";
 
 function formatDate(value: Date) {
   return new Intl.DateTimeFormat("en", {
@@ -11,6 +11,35 @@ function formatDate(value: Date) {
     day: "numeric",
     year: "numeric",
   }).format(value);
+}
+
+function renderSignup(user: AdminSignup) {
+  return (
+    <div
+      key={user.id}
+      className="flex flex-wrap items-center justify-between gap-3 py-4"
+    >
+      <div>
+        <p className="font-semibold text-slate-950">
+          {user.name || user.username || user.email || "Unnamed user"}
+        </p>
+        <p className="text-sm text-slate-500">
+          @{user.username || "no-username"} - {user.email || "No email"}
+        </p>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+          {user.role}
+        </span>
+        {user.isBanned ? (
+          <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-700">
+            Banned
+          </span>
+        ) : null}
+        <p className="text-sm text-slate-500">{formatDate(user.createdAt)}</p>
+      </div>
+    </div>
+  );
 }
 
 export default async function AdminPage() {
@@ -25,6 +54,14 @@ export default async function AdminPage() {
     { label: "Entries", value: stats.totals.entries, href: "/admin/entries" },
     { label: "Messages", value: stats.totals.messages, href: "/messages" },
     { label: "Tickets", value: stats.totals.tickets, href: "/admin/tickets" },
+  ];
+
+  const adminLinks = [
+    ["/admin/users", "Manage Users"],
+    ["/admin/entries", "Moderate Entries"],
+    ["/admin/comments", "Moderate Comments"],
+    ["/admin/tickets", "Support Tickets"],
+    ["/admin/help", "Help Articles"],
   ];
 
   return (
@@ -43,7 +80,7 @@ export default async function AdminPage() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {statCards.map((card) => (
+          {statCards.map((card: { label: string; value: number; href: string }) => (
             <Link
               key={card.label}
               href={card.href}
@@ -60,13 +97,7 @@ export default async function AdminPage() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-5">
-          {[
-            ["/admin/users", "Manage Users"],
-            ["/admin/entries", "Moderate Entries"],
-            ["/admin/comments", "Moderate Comments"],
-            ["/admin/tickets", "Support Tickets"],
-            ["/admin/help", "Help Articles"],
-          ].map(([href, label]) => (
+          {adminLinks.map(([href, label]: string[]) => (
             <Link
               key={href}
               href={href}
@@ -82,34 +113,7 @@ export default async function AdminPage() {
         <section className="rounded-[2rem] border border-slate-200/70 bg-white/95 p-6 shadow-sm">
           <h2 className="text-2xl font-bold text-slate-950">Recent signups</h2>
           <div className="mt-5 divide-y divide-slate-200">
-            {stats.recentSignups.map((user) => (
-              <div
-                key={user.id}
-                className="flex flex-wrap items-center justify-between gap-3 py-4"
-              >
-                <div>
-                  <p className="font-semibold text-slate-950">
-                    {user.name || user.username || user.email || "Unnamed user"}
-                  </p>
-                  <p className="text-sm text-slate-500">
-                    @{user.username || "no-username"} · {user.email || "No email"}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
-                    {user.role}
-                  </span>
-                  {user.isBanned ? (
-                    <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-700">
-                      Banned
-                    </span>
-                  ) : null}
-                  <p className="text-sm text-slate-500">
-                    {formatDate(user.createdAt)}
-                  </p>
-                </div>
-              </div>
-            ))}
+            {stats.recentSignups.map(renderSignup)}
           </div>
         </section>
       </div>
