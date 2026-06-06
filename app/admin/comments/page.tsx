@@ -6,6 +6,31 @@ function displayUser(user: { name: string | null; username: string | null; publi
   return user.name || user.username || user.publicId;
 }
 
+function renderComment(comment: AdminComment) {
+  return (
+    <article
+      key={comment.id}
+      className="rounded-[2rem] border border-slate-200/70 bg-white/95 p-5 shadow-sm"
+    >
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+          <p className="text-sm text-slate-500">
+            {displayUser(comment.author)} on {displayUser(comment.profileUser)}
+            {"'"}s profile
+          </p>
+          <p className="mt-3 text-base leading-7 text-slate-800">
+            {comment.content}
+          </p>
+        </div>
+        <AdminDeleteButton
+          endpoint={`/api/admin/comments/${comment.id}`}
+          confirmMessage="Delete this profile comment?"
+        />
+      </div>
+    </article>
+  );
+}
+
 export default async function AdminCommentsPage() {
   await requireAdminPage();
   const comments: AdminComment[] = await getAdminComments();
@@ -23,28 +48,7 @@ export default async function AdminCommentsPage() {
         </div>
 
         <div className="space-y-4">
-          {comments.map((comment: AdminComment) => (
-            <article
-              key={comment.id}
-              className="rounded-[2rem] border border-slate-200/70 bg-white/95 p-5 shadow-sm"
-            >
-              <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                <div>
-                  <p className="text-sm text-slate-500">
-                    {displayUser(comment.author)} on {displayUser(comment.profileUser)}
-                    {"'"}s profile
-                  </p>
-                  <p className="mt-3 text-base leading-7 text-slate-800">
-                    {comment.content}
-                  </p>
-                </div>
-                <AdminDeleteButton
-                  endpoint={`/api/admin/comments/${comment.id}`}
-                  confirmMessage="Delete this profile comment?"
-                />
-              </div>
-            </article>
-          ))}
+          {comments.map(renderComment)}
           {!comments.length ? (
             <div className="rounded-[2rem] border border-dashed border-slate-300 bg-white/90 p-10 text-center text-slate-600">
               No comments found.
