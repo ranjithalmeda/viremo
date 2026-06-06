@@ -7,6 +7,7 @@ import {
   getConversation,
   getUserById,
   markConversationRead,
+  type DirectMessageRecord,
 } from "@/src/lib/data";
 
 type MessageThreadPageProps = {
@@ -43,7 +44,7 @@ export default async function MessageThreadPage({
     <MessagesThreadClient
       currentUserId={session.user.id}
       otherUser={otherUser}
-      initialMessages={messages.map((message) => ({
+      initialMessages={messages.map((message: DirectMessageRecord) => ({
         ...message,
         createdAt: message.createdAt.toISOString(),
       }))}

@@ -3,7 +3,12 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/src/lib/auth";
 import { AIChatClient } from "@/src/components/ai-chat-client";
-import { getChatMessagesForUser, getEntriesForUser } from "@/src/lib/data";
+import {
+  getChatMessagesForUser,
+  getEntriesForUser,
+  type ChatMessageRecord,
+  type EntryRecord,
+} from "@/src/lib/data";
 import { getAiUsageForUser } from "@/src/lib/ai-limits";
 
 export default async function AIChatPage() {
@@ -39,13 +44,13 @@ export default async function AIChatPage() {
       : Promise.resolve(null),
   ]);
   
-  const entriesFormatted = entries.map((e) => ({
-    ...e,
-    createdAt: e.createdAt.toISOString(),
-    updatedAt: e.updatedAt.toISOString(),
+  const entriesFormatted = entries.map((entry: EntryRecord) => ({
+    ...entry,
+    createdAt: entry.createdAt.toISOString(),
+    updatedAt: entry.updatedAt.toISOString(),
   }));
 
-  const chatMessagesFormatted = chatMessages.map((message) => ({
+  const chatMessagesFormatted = chatMessages.map((message: ChatMessageRecord) => ({
     id: message.id,
     role: message.role === "USER" ? ("user" as const) : ("assistant" as const),
     content: message.content,
@@ -82,7 +87,7 @@ export default async function AIChatPage() {
   );
 }
 
-async function getEntriesSafely(userId: string) {
+async function getEntriesSafely(userId: string): Promise<EntryRecord[]> {
   try {
     return await getEntriesForUser(userId);
   } catch (error) {
@@ -91,7 +96,7 @@ async function getEntriesSafely(userId: string) {
   }
 }
 
-async function getChatMessagesSafely(userId: string) {
+async function getChatMessagesSafely(userId: string): Promise<ChatMessageRecord[]> {
   try {
     return await getChatMessagesForUser(userId);
   } catch (error) {

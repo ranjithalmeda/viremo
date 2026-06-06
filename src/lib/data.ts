@@ -1,5 +1,5 @@
 import { prisma } from "@/src/lib/prisma";
-import type { ChatRole } from "@prisma/client";
+import type { ChatRole, Entry, Prisma } from "@prisma/client";
 import { randomUUID } from "crypto";
 import {
   normalizePreferences,
@@ -46,7 +46,25 @@ export type NotificationRecord = {
   actor: SocialUser | null;
 };
 
-export async function getEntriesForUser(userId: string) {
+export type EntryRecord = Entry;
+
+export type FolderSummaryRecord = Prisma.FolderGetPayload<{
+  include: {
+    _count: {
+      select: { entries: true };
+    };
+  };
+}>;
+
+export type ChatMessageRecord = {
+  id: string;
+  userId: string;
+  role: ChatRole;
+  content: string;
+  createdAt: Date;
+};
+
+export async function getEntriesForUser(userId: string): Promise<EntryRecord[]> {
   return prisma.entry.findMany({
     where: { userId },
     orderBy: { updatedAt: "desc" },
@@ -172,7 +190,9 @@ export async function updatePreferencesForUser(
   return normalizePreferences(user?.preferences);
 }
 
-export async function getFoldersForUser(userId: string) {
+export async function getFoldersForUser(
+  userId: string,
+): Promise<FolderSummaryRecord[]> {
   return prisma.folder.findMany({
     where: { userId },
     orderBy: { updatedAt: "desc" },
@@ -448,16 +468,11 @@ export async function addWatchHistoryEntry(
   });
 }
 
-export async function getChatMessagesForUser(userId: string, limit = 50) {
-  const messages = await prisma.$queryRaw<
-    Array<{
-      id: string;
-      userId: string;
-      role: ChatRole;
-      content: string;
-      createdAt: Date;
-    }>
-  >`
+export async function getChatMessagesForUser(
+  userId: string,
+  limit = 50,
+): Promise<ChatMessageRecord[]> {
+  const messages = await prisma.$queryRaw<ChatMessageRecord[]>`
     SELECT id, "userId", role, content, "createdAt"
     FROM "ChatMessage"
     WHERE "userId" = ${userId}
@@ -694,7 +709,9 @@ export async function deleteProfileCommentForOwner(
   return result.length > 0;
 }
 
-export async function getConversationsForUser(userId: string) {
+export async function getConversationsForUser(
+  userId: string,
+): Promise<ConversationRecord[]> {
   const rows = await prisma.$queryRaw<
     Array<{
       messageId: string;
@@ -756,7 +773,7 @@ export async function getConversationsForUser(userId: string) {
     ORDER BY ranked."createdAt" DESC
   `;
 
-  return rows.map((row) => ({
+  return rows.map((row): ConversationRecord => ({
     user: {
       id: row.userId,
       name: row.name,
@@ -777,7 +794,10 @@ export async function getConversationsForUser(userId: string) {
   }));
 }
 
-export async function getConversation(userId: string, otherUserId: string) {
+export async function getConversation(
+  userId: string,
+  otherUserId: string,
+): Promise<DirectMessageRecord[]> {
   return prisma.$queryRaw<DirectMessageRecord[]>`
     SELECT id, content, "createdAt", "readAt", "senderId", "recipientId"
     FROM "DirectMessage"
@@ -868,7 +888,9 @@ export async function getUnreadSocialNotificationCount(userId: string) {
   return Number(row?.count ?? 0);
 }
 
-export async function getNotificationsForUser(userId: string) {
+export async function getNotificationsForUser(
+  userId: string,
+): Promise<NotificationRecord[]> {
   const rows = await prisma.$queryRaw<
     Array<{
       id: string;

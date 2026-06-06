@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { UserAvatar } from "@/src/components/user-avatar";
-import { getPublicFolderForProfile } from "@/src/lib/data";
+import { getPublicFolderForProfile, type EntryRecord } from "@/src/lib/data";
 import { formatRating } from "@/src/lib/watchlist";
 
 type PublicFolderPageProps = {
@@ -18,6 +18,51 @@ function ownerLabel(user: {
   publicId: string;
 }) {
   return user.name || user.username || user.publicId;
+}
+
+type PublicFolderEntryRecord = {
+  id: string;
+  entry: EntryRecord;
+};
+
+function renderEntryCard(item: PublicFolderEntryRecord) {
+  const entry = item.entry;
+
+  return (
+    <article
+      key={item.id}
+      className="overflow-hidden rounded-[2rem] border border-slate-200/70 bg-white/95 shadow-sm"
+    >
+      <div className="aspect-[2/3] bg-slate-100">
+        {entry.poster ? (
+          <img
+            src={entry.poster}
+            alt={entry.title}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center px-6 text-center text-xl font-bold text-slate-400">
+            {entry.title}
+          </div>
+        )}
+      </div>
+      <div className="p-5">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+            {entry.type}
+          </span>
+          {entry.rating ? (
+            <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-700">
+              {formatRating(entry.rating)}
+            </span>
+          ) : null}
+        </div>
+        <h2 className="mt-3 text-xl font-bold text-slate-950">
+          {entry.title}
+        </h2>
+      </div>
+    </article>
+  );
 }
 
 export default async function PublicProfileFolderPage({
@@ -77,45 +122,9 @@ export default async function PublicProfileFolderPage({
 
         {folder.entries.length ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {folder.entries.map((item) => {
-              const entry = item.entry;
-
-              return (
-                <article
-                  key={item.id}
-                  className="overflow-hidden rounded-[2rem] border border-slate-200/70 bg-white/95 shadow-sm"
-                >
-                  <div className="aspect-[2/3] bg-slate-100">
-                    {entry.poster ? (
-                      <img
-                        src={entry.poster}
-                        alt={entry.title}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center px-6 text-center text-xl font-bold text-slate-400">
-                        {entry.title}
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-5">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
-                        {entry.type}
-                      </span>
-                      {entry.rating ? (
-                        <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-700">
-                          {formatRating(entry.rating)}
-                        </span>
-                      ) : null}
-                    </div>
-                    <h2 className="mt-3 text-xl font-bold text-slate-950">
-                      {entry.title}
-                    </h2>
-                  </div>
-                </article>
-              );
-            })}
+            {folder.entries.map((item: PublicFolderEntryRecord) =>
+              renderEntryCard(item),
+            )}
           </div>
         ) : (
           <div className="rounded-[2rem] border border-dashed border-slate-300 bg-white/90 p-10 text-center text-slate-600">

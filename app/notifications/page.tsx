@@ -7,6 +7,7 @@ import { authOptions } from "@/src/lib/auth";
 import {
   getNotificationsForUser,
   markNotificationsRead,
+  type NotificationRecord,
   type SocialUser,
 } from "@/src/lib/data";
 
@@ -31,7 +32,7 @@ export default async function NotificationsPage() {
     redirect("/login");
   }
 
-  const notifications = await getNotificationsForUser(session.user.id);
+  const notifications: NotificationRecord[] = await getNotificationsForUser(session.user.id);
   await markNotificationsRead(session.user.id);
 
   return (
@@ -51,7 +52,7 @@ export default async function NotificationsPage() {
 
         {notifications.length ? (
           <div className="space-y-3">
-            {notifications.map((notification) => {
+            {notifications.map((notification: NotificationRecord) => {
               const actor = notification.actor;
               const href = actor ? `/profile/${actor.username || actor.publicId}` : "/followers";
 

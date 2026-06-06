@@ -4,7 +4,10 @@ import { getServerSession } from "next-auth";
 
 import { UserAvatar } from "@/src/components/user-avatar";
 import { authOptions } from "@/src/lib/auth";
-import { getConversationsForUser } from "@/src/lib/data";
+import {
+  getConversationsForUser,
+  type ConversationRecord,
+} from "@/src/lib/data";
 
 function displayName(user: {
   name: string | null;
@@ -30,7 +33,7 @@ export default async function MessagesPage() {
     redirect("/login");
   }
 
-  const conversations = await getConversationsForUser(session.user.id);
+  const conversations: ConversationRecord[] = await getConversationsForUser(session.user.id);
 
   return (
     <div className="w-full px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
@@ -49,7 +52,7 @@ export default async function MessagesPage() {
 
         {conversations.length ? (
           <div className="space-y-3">
-            {conversations.map((conversation) => {
+            {conversations.map((conversation: ConversationRecord) => {
               const mine =
                 conversation.latestMessage.senderId === session.user.id;
 

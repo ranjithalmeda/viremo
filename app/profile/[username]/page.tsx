@@ -7,7 +7,12 @@ import { ProfileSocialPanel } from "@/src/components/profile-social-panel";
 import { StatsBar } from "@/src/components/stats-bar";
 import { UserAvatar } from "@/src/components/user-avatar";
 import { authOptions } from "@/src/lib/auth";
-import { getProfileSocialSummary, getPublicProfile } from "@/src/lib/data";
+import {
+  getProfileSocialSummary,
+  getPublicProfile,
+  type EntryRecord,
+  type ProfileCommentRecord,
+} from "@/src/lib/data";
 import { formatRating } from "@/src/lib/watchlist";
 import {
   getPreferenceStyle,
@@ -18,6 +23,34 @@ type ProfilePageProps = {
   params: Promise<{
     username: string;
   }>;
+};
+
+type ProfileFolderEntryRecord = {
+  id: string;
+  entry: EntryRecord;
+};
+
+type SerializedEntryRecord = Omit<EntryRecord, "createdAt" | "updatedAt"> & {
+  createdAt: string;
+  updatedAt: string;
+};
+
+type ProfileFolderRecord = {
+  id: string;
+  name: string;
+  entries: ProfileFolderEntryRecord[];
+};
+
+type SerializedProfileFolderEntry = {
+  id: string;
+  entry: SerializedEntryRecord;
+};
+
+type SerializedProfileFolder = {
+  id: string;
+  name: string;
+  entryCount: number;
+  entries: SerializedProfileFolderEntry[];
 };
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
@@ -31,7 +64,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     notFound();
   }
 
-  const entries = profile.entries.map((entry) => ({
+  const entries = profile.entries.map((entry: EntryRecord) => ({
     ...entry,
     createdAt: entry.createdAt.toISOString(),
     updatedAt: entry.updatedAt.toISOString(),
@@ -42,15 +75,15 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     profile.id,
     session?.user?.id ?? null,
   );
-  const comments = profile.comments.map((comment) => ({
+  const comments = profile.comments.map((comment: ProfileCommentRecord) => ({
     ...comment,
     createdAt: comment.createdAt.toISOString(),
   }));
-  const folders = profile.folders.map((folder) => ({
+  const folders: SerializedProfileFolder[] = profile.folders.map((folder: ProfileFolderRecord) => ({
     id: folder.id,
     name: folder.name,
     entryCount: folder.entries.length,
-    entries: folder.entries.map((folderEntry) => ({
+    entries: folder.entries.map((folderEntry: ProfileFolderEntryRecord) => ({
       id: folderEntry.id,
       entry: {
         ...folderEntry.entry,
@@ -162,7 +195,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
             </div>
 
             <div className="grid gap-5 lg:grid-cols-2">
-              {folders.map((folder) => (
+              {folders.map((folder: SerializedProfileFolder) => (
                 <Link
                   key={folder.id}
                   href={`/profile/${profile.username || profile.publicId}/folders/${folder.id}`}
@@ -183,7 +216,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                   </div>
 
                   <div className="mt-5 space-y-3">
-                    {folder.entries.slice(0, 4).map((item) => (
+                    {folder.entries.slice(0, 4).map((item: SerializedProfileFolderEntry) => (
                       <div
                         key={item.id}
                         className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"

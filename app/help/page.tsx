@@ -1,8 +1,8 @@
 import { HelpCenterClient } from "@/src/components/help-center-client";
-import { getPublishedHelpArticles } from "@/src/lib/help";
+import { getPublishedHelpArticles, type HelpArticleRecord } from "@/src/lib/help";
 
 export default async function HelpPage() {
-  const articles = await getPublishedHelpArticles();
+  const articles: HelpArticleRecord[] = await getPublishedHelpArticles();
 
   return (
     <div className="w-full px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
@@ -21,7 +21,7 @@ export default async function HelpPage() {
         </div>
 
         <HelpCenterClient
-          articles={articles.map((article) => ({
+          articles={articles.map((article: HelpArticleRecord) => ({
             id: article.id,
             title: article.title,
             content: article.content,

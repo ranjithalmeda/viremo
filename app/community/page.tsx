@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
+import type { Prisma } from "@prisma/client";
 
 import { CommunityCreateForm } from "@/src/components/community-create-form";
 import { UserAvatar } from "@/src/components/user-avatar";
@@ -13,6 +14,21 @@ type CommunityPageProps = {
 
 const categories: EntryTypeValue[] = ["MOVIE", "SERIES", "ANIME", "BOOK"];
 
+type CommunityPostSummary = Prisma.CommunityPostGetPayload<{
+  include: {
+    user: {
+      select: {
+        name: true;
+        username: true;
+        publicId: true;
+        image: true;
+        avatarUrl: true;
+      };
+    };
+    _count: { select: { replies: true } };
+  };
+}>;
+
 export default async function CommunityPage({ searchParams }: CommunityPageProps) {
   const [{ category }, session] = await Promise.all([
     searchParams,
@@ -21,7 +37,7 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
   const activeCategory = categories.includes(category as EntryTypeValue)
     ? (category as EntryTypeValue)
     : null;
-  const posts = await prisma.communityPost.findMany({
+  const posts: CommunityPostSummary[] = await prisma.communityPost.findMany({
     where: activeCategory ? { category: activeCategory } : undefined,
     orderBy: { createdAt: "desc" },
     include: {
@@ -59,7 +75,7 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
           >
             All
           </Link>
-          {categories.map((item) => (
+          {categories.map((item: EntryTypeValue) => (
             <Link
               key={item}
               href={`/community?category=${item}`}
@@ -71,7 +87,7 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
         </div>
 
         <div className="grid gap-5">
-          {posts.map((post) => {
+          {posts.map((post: CommunityPostSummary) => {
             const profileHref = `/profile/${post.user.username || post.user.publicId}`;
 
             return (

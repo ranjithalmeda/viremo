@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 
 import { FoldersClient } from "@/src/components/folders-client";
 import { authOptions } from "@/src/lib/auth";
-import { getFoldersForUser } from "@/src/lib/data";
+import { getFoldersForUser, type FolderSummaryRecord } from "@/src/lib/data";
 
 export default async function FoldersPage() {
   const session = await getServerSession(authOptions);
@@ -13,7 +13,7 @@ export default async function FoldersPage() {
   }
 
   const folders = await getFoldersForUser(session.user.id);
-  const initialFolders = folders.map((folder) => ({
+  const initialFolders = folders.map((folder: FolderSummaryRecord) => ({
     id: folder.id,
     name: folder.name,
     isPublic: folder.isPublic,

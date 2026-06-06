@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
+import type { Prisma } from "@prisma/client";
 
 import {
   CommunityReplyActions,
@@ -14,6 +15,37 @@ import { formatType } from "@/src/lib/watchlist";
 type CommunityPostPageProps = {
   params: Promise<{ postId: string }>;
 };
+
+type CommunityPostDetail = Prisma.CommunityPostGetPayload<{
+  include: {
+    user: {
+      select: {
+        id: true;
+        name: true;
+        username: true;
+        publicId: true;
+        image: true;
+        avatarUrl: true;
+      };
+    };
+    replies: {
+      include: {
+        user: {
+          select: {
+            id: true;
+            name: true;
+            username: true;
+            publicId: true;
+            image: true;
+            avatarUrl: true;
+          };
+        };
+      };
+    };
+  };
+}>;
+
+type CommunityReplyDetail = CommunityPostDetail["replies"][number];
 
 function youtubeEmbedUrl(url: string | null) {
   if (!url) return null;
@@ -38,7 +70,7 @@ export default async function CommunityPostPage({
     params,
     getServerSession(authOptions),
   ]);
-  const post = await prisma.communityPost.findUnique({
+  const post: CommunityPostDetail | null = await prisma.communityPost.findUnique({
     where: { id: postId },
     include: {
       user: {
@@ -106,7 +138,7 @@ export default async function CommunityPostPage({
           </p>
           {post.imageUrls.length ? (
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              {post.imageUrls.map((src) => (
+              {post.imageUrls.map((src: string) => (
                 <img
                   key={src}
                   src={src}
@@ -130,7 +162,7 @@ export default async function CommunityPostPage({
 
         <section className="space-y-4">
           <h2 className="text-2xl font-bold text-slate-950">Replies</h2>
-          {post.replies.map((reply) => (
+          {post.replies.map((reply: CommunityReplyDetail) => (
             <article
               key={reply.id}
               className="rounded-[2rem] border border-slate-200/70 bg-white/95 p-5 shadow-sm"

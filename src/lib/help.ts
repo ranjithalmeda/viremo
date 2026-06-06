@@ -179,7 +179,7 @@ export async function seedDefaultHelpArticles() {
   }
 }
 
-export async function getPublishedHelpArticles() {
+export async function getPublishedHelpArticles(): Promise<HelpArticleRecord[]> {
   await seedDefaultHelpArticles();
 
   const result = await pgPool.query(
@@ -189,10 +189,10 @@ export async function getPublishedHelpArticles() {
      ORDER BY category ASC, "order" ASC, title ASC`,
   );
 
-  return result.rows.map(mapHelpArticle);
+  return result.rows.map((row: Record<string, unknown>) => mapHelpArticle(row));
 }
 
-export async function getAllHelpArticlesForAdmin() {
+export async function getAllHelpArticlesForAdmin(): Promise<HelpArticleRecord[]> {
   await seedDefaultHelpArticles();
 
   const result = await pgPool.query(
@@ -201,7 +201,7 @@ export async function getAllHelpArticlesForAdmin() {
      ORDER BY category ASC, "order" ASC, "updatedAt" DESC`,
   );
 
-  return result.rows.map(mapHelpArticle);
+  return result.rows.map((row: Record<string, unknown>) => mapHelpArticle(row));
 }
 
 export async function createHelpArticle(data: {
