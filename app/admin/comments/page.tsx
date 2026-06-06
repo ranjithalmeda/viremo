@@ -23,7 +23,7 @@ export default async function AdminCommentsPage() {
         </div>
 
         <div className="space-y-4">
-          {comments.map((comment) => (
+          {comments.map((comment: AdminComment) => (
             <article
               key={comment.id}
               className="rounded-[2rem] border border-slate-200/70 bg-white/95 p-5 shadow-sm"
