@@ -18,6 +18,7 @@ export type EntryDraft = {
 type AddEntryModalProps = {
   open: boolean;
   initialEntry?: EntryRecord | null;
+  initialDraft?: EntryDraft | null;
   onClose: () => void;
   onSubmit: (draft: EntryDraft) => Promise<void>;
 };
@@ -35,15 +36,19 @@ const emptyDraft: EntryDraft = {
 export function AddEntryModal({
   open,
   initialEntry,
+  initialDraft,
   onClose,
   onSubmit,
 }: AddEntryModalProps) {
   const [draft, setDraft] = useState<EntryDraft>(emptyDraft);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const isEditing = Boolean(initialEntry);
 
   useEffect(() => {
     if (!open) return;
+
+    setSubmitError(null);
 
     if (initialEntry) {
       setDraft({
@@ -58,8 +63,13 @@ export function AddEntryModal({
       return;
     }
 
+    if (initialDraft) {
+      setDraft(initialDraft);
+      return;
+    }
+
     setDraft(emptyDraft);
-  }, [initialEntry, open]);
+  }, [initialDraft, initialEntry, open]);
 
   if (!open) return null;
 
@@ -92,9 +102,16 @@ export function AddEntryModal({
           onSubmit={async (event) => {
             event.preventDefault();
             setSubmitting(true);
+            setSubmitError(null);
 
             try {
               await onSubmit(draft);
+            } catch (error) {
+              const message =
+                error instanceof Error
+                  ? error.message
+                  : "We could not save this entry.";
+              setSubmitError(message);
             } finally {
               setSubmitting(false);
             }
@@ -153,7 +170,7 @@ export function AddEntryModal({
             >
               {watchStatuses.map((status) => (
                 <option key={status} value={status}>
-                  {formatStatus(status)}
+                  {formatStatus(status, draft.type)}
                 </option>
               ))}
             </select>
@@ -166,6 +183,7 @@ export function AddEntryModal({
             <input
               min={1}
               max={5}
+              step={0.5}
               type="number"
               value={draft.rating ?? ""}
               onChange={(event) =>
@@ -175,7 +193,7 @@ export function AddEntryModal({
                 }))
               }
               className="theme-input w-full rounded-2xl px-4 py-3 text-sm outline-none"
-              placeholder="1-5"
+              placeholder="1.0-5.0"
             />
           </label>
 
@@ -210,6 +228,12 @@ export function AddEntryModal({
               placeholder="Favorite character, episode count, why you dropped it, what surprised you..."
             />
           </label>
+
+          {submitError ? (
+            <div className="sm:col-span-2 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">
+              {submitError}
+            </div>
+          ) : null}
 
           <div className="sm:col-span-2 flex flex-col gap-3 sm:flex-row sm:justify-end">
             <button

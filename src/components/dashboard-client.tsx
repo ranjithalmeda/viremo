@@ -9,7 +9,12 @@ import {
 } from "@/src/components/add-entry-modal";
 import { EntryCard } from "@/src/components/entry-card";
 import { FilterPills } from "@/src/components/filter-pills";
+import { PersonalizedDiarySections } from "@/src/components/personalized-diary-sections";
+import { WatchHistoryCalendar } from "@/src/components/watch-history-calendar";
+import { Recommendations } from "@/src/components/recommendations";
+import type { UserPreferences } from "@/src/lib/preferences";
 import {
+  formatRating,
   formatStatus,
   formatType,
   getPosterFallback,
@@ -19,6 +24,7 @@ import {
 
 type DashboardClientProps = {
   initialEntries: EntryRecord[];
+  preferences: UserPreferences;
   profile: {
     publicId: string | null;
     username: string | null;
@@ -26,14 +32,27 @@ type DashboardClientProps = {
   };
 };
 
+type FolderOption = {
+  id: string;
+  name: string;
+  isPublic: boolean;
+  entryCount: number;
+};
+
 export function DashboardClient({
   initialEntries,
+  preferences,
   profile,
 }: DashboardClientProps) {
   const [entries, setEntries] = useState(initialEntries);
   const [filter, setFilter] = useState<EntryFilter>("ALL");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<EntryRecord | null>(null);
+  const [folderEntry, setFolderEntry] = useState<EntryRecord | null>(null);
+  const [folderOptions, setFolderOptions] = useState<FolderOption[]>([]);
+  const [selectedFolderId, setSelectedFolderId] = useState("");
+  const [foldersLoading, setFoldersLoading] = useState(false);
+  const [folderSubmitting, setFolderSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -124,6 +143,95 @@ export function DashboardClient({
     });
   }
 
+  async function openAddToFolder(entry: EntryRecord) {
+    setFolderEntry(entry);
+    setFeedback(null);
+
+    if (folderOptions.length > 0) {
+      setSelectedFolderId(folderOptions[0].id);
+      return;
+    }
+
+    setFoldersLoading(true);
+    try {
+      const response = await fetch("/api/folders");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Could not load folders.");
+      }
+
+      const folders = (data.folders || []).map(
+        (folder: {
+          id: string;
+          name: string;
+          isPublic: boolean;
+          _count?: { entries: number };
+        }) => ({
+          id: folder.id,
+          name: folder.name,
+          isPublic: folder.isPublic,
+          entryCount: folder._count?.entries ?? 0,
+        }),
+      );
+      setFolderOptions(folders);
+      setSelectedFolderId(folders[0]?.id || "");
+    } catch (error) {
+      setFeedback(error instanceof Error ? error.message : "Could not load folders.");
+    } finally {
+      setFoldersLoading(false);
+    }
+  }
+
+  async function addEntryToFolder() {
+    if (!folderEntry || !selectedFolderId) {
+      setFeedback("Choose a folder first.");
+      return;
+    }
+
+    setFolderSubmitting(true);
+    setFeedback(null);
+
+    try {
+      const response = await fetch(`/api/folders/${selectedFolderId}/entries`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ entryId: folderEntry.id }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Could not add entry to folder.");
+      }
+
+      const folderName =
+        folderOptions.find((folder) => folder.id === selectedFolderId)?.name ||
+        "folder";
+      setFolderOptions((current) =>
+        current.map((folder) =>
+          folder.id === selectedFolderId
+            ? {
+                ...folder,
+                entryCount: data.created
+                  ? folder.entryCount + 1
+                  : folder.entryCount,
+              }
+            : folder,
+        ),
+      );
+      setFeedback(
+        data.created
+          ? `Added "${folderEntry.title}" to ${folderName}.`
+          : `"${folderEntry.title}" is already in ${folderName}.`,
+      );
+      setFolderEntry(null);
+    } catch (error) {
+      setFeedback(error instanceof Error ? error.message : "Could not add entry to folder.");
+    } finally {
+      setFolderSubmitting(false);
+    }
+  }
+
   return (
     <>
       <section className="space-y-6">
@@ -171,6 +279,12 @@ export function DashboardClient({
                   >
                     Search titles
                   </Link>
+                  <Link
+                    href="/folders"
+                    className="theme-button-secondary inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold"
+                  >
+                    Manage folders
+                  </Link>
                 </div>
               </div>
             </aside>
@@ -185,7 +299,7 @@ export function DashboardClient({
                           Featured log
                         </span>
                         <span>{formatType(featuredEntry.type)}</span>
-                        <span>{formatStatus(featuredEntry.status)}</span>
+                        <span>{formatStatus(featuredEntry.status, featuredEntry.type)}</span>
                       </div>
 
                       <h1 className="text-4xl font-semibold text-slate-950 sm:text-5xl">
@@ -213,6 +327,13 @@ export function DashboardClient({
                           className="theme-button-secondary rounded-full px-5 py-3 text-sm font-semibold"
                         >
                           Remove entry
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => openAddToFolder(featuredEntry)}
+                          className="theme-button-secondary rounded-full px-5 py-3 text-sm font-semibold"
+                        >
+                          Add to folder
                         </button>
                       </div>
                     </div>
@@ -279,7 +400,7 @@ export function DashboardClient({
                               {entry.title}
                             </p>
                             <p className="mt-1 text-sm text-slate-500">
-                              {formatType(entry.type)} | {formatStatus(entry.status)}
+                              {formatType(entry.type)} | {formatStatus(entry.status, entry.type)}
                             </p>
                             <p className="mt-2 truncate text-sm text-slate-600">
                               {entry.notes?.trim() || "Open to add your notes and reactions."}
@@ -287,7 +408,7 @@ export function DashboardClient({
                           </div>
                           <div className="text-right">
                             <div className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
-                              {entry.rating ? `${entry.rating}/5` : "No rating"}
+                              {formatRating(entry.rating)}
                             </div>
                           </div>
                         </button>
@@ -359,6 +480,7 @@ export function DashboardClient({
                           setEditingEntry(currentEntry);
                           setModalOpen(true);
                         }}
+                        onAddToFolder={openAddToFolder}
                         onDelete={deleteEntry}
                       />
                     ))}
@@ -454,6 +576,23 @@ export function DashboardClient({
         </section>
       </section>
 
+      <PersonalizedDiarySections
+        entries={filteredEntries}
+        preferences={preferences}
+        onEdit={(entry) => {
+          setEditingEntry(entry);
+          setModalOpen(true);
+        }}
+        onDelete={deleteEntry}
+        onAddToFolder={openAddToFolder}
+      />
+
+      {/* New Insights Sections */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <WatchHistoryCalendar />
+        <Recommendations />
+      </div>
+
       <AddEntryModal
         open={modalOpen}
         initialEntry={editingEntry}
@@ -463,6 +602,85 @@ export function DashboardClient({
         }}
         onSubmit={saveEntry}
       />
+
+      {folderEntry ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 py-8 backdrop-blur-sm">
+          <div className="glass-strong w-full max-w-lg rounded-[2rem] border border-slate-200/70 bg-white/95 p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+                  Add to folder
+                </p>
+                <h2 className="mt-3 text-2xl font-semibold text-slate-950">
+                  {folderEntry.title}
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setFolderEntry(null)}
+                className="theme-button-secondary rounded-full px-4 py-2 text-sm font-semibold"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="mt-6">
+              {foldersLoading ? (
+                <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                  Loading folders...
+                </div>
+              ) : folderOptions.length ? (
+                <label className="block">
+                  <span className="mb-2 block text-sm font-semibold text-slate-700">
+                    Folder
+                  </span>
+                  <select
+                    value={selectedFolderId}
+                    onChange={(event) => setSelectedFolderId(event.target.value)}
+                    className="theme-input w-full rounded-2xl px-4 py-3 text-sm outline-none"
+                  >
+                    {folderOptions.map((folder) => (
+                      <option key={folder.id} value={folder.id}>
+                        {folder.name} ({folder.isPublic ? "Public" : "Private"})
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ) : (
+                <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-center">
+                  <p className="text-sm text-slate-600">
+                    Create a folder first, then come back to add this entry.
+                  </p>
+                  <Link
+                    href="/folders"
+                    className="theme-button-primary mt-4 inline-flex rounded-full px-4 py-2 text-sm font-semibold"
+                  >
+                    Create folder
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setFolderEntry(null)}
+                className="theme-button-secondary flex-1 rounded-full px-4 py-3 text-sm font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={addEntryToFolder}
+                disabled={folderSubmitting || foldersLoading || !folderOptions.length}
+                className="theme-button-primary flex-1 rounded-full px-4 py-3 text-sm font-semibold disabled:opacity-60"
+              >
+                {folderSubmitting ? "Adding..." : "Add"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {isPending ? (
         <div className="theme-button-neutral fixed bottom-5 right-5 rounded-full px-4 py-2 text-sm font-semibold shadow-lg">

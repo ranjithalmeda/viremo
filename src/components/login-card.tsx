@@ -68,6 +68,13 @@ export function LoginCard({ error }: LoginCardProps) {
     router.refresh();
   }
 
+  function handleGoogleSignIn() {
+    setMessage(null);
+    void signIn("google", {
+      callbackUrl: "/dashboard",
+    });
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSubmitting(true);
@@ -111,8 +118,8 @@ export function LoginCard({ error }: LoginCardProps) {
   const busy = isSubmitting || isPending;
 
   return (
-    <div className="glass-strong mx-auto w-full max-w-md rounded-[2rem] border border-slate-200/70 bg-white/95 p-8 shadow-xl sm:p-10">
-      <span className="inline-flex rounded-full bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-700">
+    <div className="glass-strong mx-auto w-full max-w-md rounded-[2rem] p-8 shadow-xl sm:p-10">
+      <span className="inline-flex rounded-full bg-[rgba(139,92,246,0.14)] px-4 py-2 text-sm font-semibold text-[var(--accent)]">
         Email login
       </span>
       <h1 className="theme-heading mt-5 text-4xl font-semibold">
@@ -120,11 +127,11 @@ export function LoginCard({ error }: LoginCardProps) {
       </h1>
       <p className="theme-muted mt-4 text-base leading-7">
         {mode === "signin"
-          ? "Use your email and password to open the diary and keep building the UI flow."
-          : "Create a normal login for now so we can keep shipping the app while GitHub auth stays paused."}
+          ? "Use your email and password, or continue with Google to open your diary."
+          : "Create a Viremo login with email and password, or use Google if you prefer."}
       </p>
 
-      <div className="mt-6 grid grid-cols-2 gap-2 rounded-full border border-slate-200/70 bg-slate-50 p-1 text-sm font-semibold text-slate-700">
+      <div className="mt-6 grid grid-cols-2 gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-soft)] p-1 text-sm font-semibold text-[var(--muted)]">
         <button
           type="button"
           onClick={() => {
@@ -132,7 +139,9 @@ export function LoginCard({ error }: LoginCardProps) {
             setMessage(null);
           }}
           className={`rounded-full px-4 py-2 ${
-            mode === "signin" ? "bg-white text-slate-900 shadow-sm" : "text-slate-600"
+            mode === "signin"
+              ? "bg-[var(--accent)] text-white shadow-sm"
+              : "text-[var(--muted)]"
           }`}
         >
           Sign in
@@ -144,7 +153,9 @@ export function LoginCard({ error }: LoginCardProps) {
             setMessage(null);
           }}
           className={`rounded-full px-4 py-2 ${
-            mode === "signup" ? "bg-white text-slate-900 shadow-sm" : "text-slate-600"
+            mode === "signup"
+              ? "bg-[var(--accent)] text-white shadow-sm"
+              : "text-[var(--muted)]"
           }`}
         >
           Create account
@@ -204,7 +215,7 @@ export function LoginCard({ error }: LoginCardProps) {
         <button
           type="submit"
           disabled={busy}
-          className="theme-button-neutral inline-flex w-full items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-70"
+          className="theme-button-primary inline-flex w-full items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-70"
         >
           {busy
             ? mode === "signin"
@@ -215,6 +226,24 @@ export function LoginCard({ error }: LoginCardProps) {
               : "Create account"}
         </button>
       </form>
+
+      <div className="my-6 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--muted)]">
+        <span className="h-px flex-1 bg-[var(--border)]" />
+        <span>or</span>
+        <span className="h-px flex-1 bg-[var(--border)]" />
+      </div>
+
+      <button
+        type="button"
+        onClick={handleGoogleSignIn}
+        disabled={busy}
+        className="theme-button-secondary inline-flex w-full items-center justify-center gap-3 rounded-2xl px-5 py-3.5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-70"
+      >
+        <span className="grid size-6 place-items-center rounded-full bg-white text-sm font-bold text-[var(--accent)] shadow-sm">
+          G
+        </span>
+        Sign in with Google
+      </button>
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
         <Link

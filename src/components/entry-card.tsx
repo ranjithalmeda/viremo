@@ -4,6 +4,7 @@ import type { EntryRecord } from "@/src/lib/watchlist";
 import {
   formatStatus,
   formatType,
+  formatRating,
   getPosterFallback,
 } from "@/src/lib/watchlist";
 
@@ -11,6 +12,7 @@ type EntryCardProps = {
   entry: EntryRecord;
   onEdit?: (entry: EntryRecord) => void;
   onDelete?: (entry: EntryRecord) => void;
+  onAddToFolder?: (entry: EntryRecord) => void;
 };
 
 function formatUpdatedAt(value: string) {
@@ -21,7 +23,12 @@ function formatUpdatedAt(value: string) {
   }).format(new Date(value));
 }
 
-export function EntryCard({ entry, onEdit, onDelete }: EntryCardProps) {
+export function EntryCard({
+  entry,
+  onEdit,
+  onDelete,
+  onAddToFolder,
+}: EntryCardProps) {
   const updatedLabel = formatUpdatedAt(entry.updatedAt);
 
   return (
@@ -44,11 +51,11 @@ export function EntryCard({ entry, onEdit, onDelete }: EntryCardProps) {
               {formatType(entry.type)}
             </span>
             <span className="rounded-full bg-slate-900/80 px-3 py-1 text-xs font-semibold text-white">
-              {formatStatus(entry.status)}
+              {formatStatus(entry.status, entry.type)}
             </span>
             {entry.rating ? (
               <span className="rounded-full bg-violet-100/90 px-3 py-1 text-xs font-semibold text-violet-700">
-                {entry.rating}/5
+                {formatRating(entry.rating)}
               </span>
             ) : null}
           </div>
@@ -85,8 +92,8 @@ export function EntryCard({ entry, onEdit, onDelete }: EntryCardProps) {
           </div>
         </div>
 
-        {(onEdit || onDelete) && (
-          <div className="flex gap-2">
+        {(onEdit || onDelete || onAddToFolder) && (
+          <div className="flex flex-wrap gap-2">
             {onEdit ? (
               <button
                 type="button"
@@ -94,6 +101,15 @@ export function EntryCard({ entry, onEdit, onDelete }: EntryCardProps) {
                 className="theme-button-secondary flex-1 rounded-full px-4 py-2 text-sm font-semibold"
               >
                 Edit
+              </button>
+            ) : null}
+            {onAddToFolder ? (
+              <button
+                type="button"
+                onClick={() => onAddToFolder(entry)}
+                className="theme-button-secondary flex-1 rounded-full px-4 py-2 text-sm font-semibold"
+              >
+                Add to folder
               </button>
             ) : null}
             {onDelete ? (

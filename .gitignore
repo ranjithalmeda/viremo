@@ -43,6 +43,8 @@ next-env.d.ts
 /app/generated/prisma
 
 
+.PRPROJECT_STATUS_REPORT.md
+
 
 // almeda - QOO7IB 
 // test   - 19A168

@@ -220,8 +220,8 @@ export function SearchClient() {
 
   return (
     <section className="space-y-8">
-      <div className="space-y-4 rounded-[2rem] border border-slate-200/70 bg-white/95 p-8 shadow-xl">
-        <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-sm font-semibold text-violet-700">
+      <div className="space-y-4 rounded-[2rem] border border-[var(--border)] bg-[var(--surface)] p-8 shadow-xl">
+        <div className="inline-flex items-center gap-2 rounded-full bg-[rgba(139,92,246,0.14)] px-4 py-2 text-sm font-semibold text-[var(--accent)]">
           {source === "tmdb" ? "TMDB powered" : "Google Books powered"}
         </div>
         <div className="space-y-4">
@@ -284,7 +284,7 @@ export function SearchClient() {
             return (
               <article
                 key={result.id}
-                className="rounded-[1.8rem] border border-slate-200/70 bg-white/95 shadow-sm"
+                className="rounded-[1.8rem] border border-[var(--border)] bg-[var(--surface)] shadow-sm transition hover:border-[rgba(139,92,246,0.65)]"
               >
                 <div className="grid gap-5 p-5 sm:grid-cols-[150px_1fr]">
                   <div className="overflow-hidden rounded-[1.5rem] bg-slate-950">
@@ -359,7 +359,9 @@ export function SearchClient() {
                           }
                           className="theme-input w-full rounded-2xl px-4 py-3 text-sm outline-none"
                         >
-                          <option value="WATCHING">{formatStatus("WATCHING")}</option>
+                          <option value="WATCHING">
+                            {formatStatus("WATCHING", selection.type)}
+                          </option>
                           <option value="COMPLETED">{formatStatus("COMPLETED")}</option>
                           <option value="DROPPED">{formatStatus("DROPPED")}</option>
                         </select>

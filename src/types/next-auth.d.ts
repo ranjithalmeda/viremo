@@ -6,12 +6,16 @@ declare module "next-auth" {
       id: string;
       publicId?: string | null;
       username?: string | null;
+      role?: "USER" | "PRO" | "ADMIN";
+      isBanned?: boolean;
     };
   }
 
   interface User {
     publicId?: string | null;
     username?: string | null;
+    role?: "USER" | "PRO" | "ADMIN";
+    isBanned?: boolean;
   }
 }
 
@@ -19,5 +23,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     publicId?: string | null;
     username?: string | null;
+    role?: "USER" | "PRO" | "ADMIN";
+    isBanned?: boolean;
   }
 }

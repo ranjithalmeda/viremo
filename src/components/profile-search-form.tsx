@@ -39,7 +39,7 @@ export function ProfileSearchForm({
         />
         <button
           type="submit"
-          className="theme-button-neutral rounded-full px-4 py-2 text-sm font-semibold"
+          className="theme-button-primary rounded-full px-4 py-2 text-sm font-semibold"
         >
           Find
         </button>
@@ -49,7 +49,7 @@ export function ProfileSearchForm({
 
   return (
     <div className="glass rounded-[1.8rem] p-6 sm:p-7">
-      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--accent-strong)]">
+      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--accent-gold)]">
         Find a profile
       </p>
       <h2 className="theme-heading mt-3 text-2xl font-semibold">
@@ -72,7 +72,7 @@ export function ProfileSearchForm({
         />
         <button
           type="submit"
-          className="theme-button-neutral rounded-2xl px-5 py-3 text-sm font-semibold"
+          className="theme-button-primary rounded-2xl px-5 py-3 text-sm font-semibold"
         >
           Open profile
         </button>

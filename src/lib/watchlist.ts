@@ -27,7 +27,7 @@ export const typeLabels: Record<EntryTypeValue, string> = {
 
 export const statusLabels: Record<WatchStatusValue, string> = {
   WATCHING: "Watching",
-  COMPLETED: "Finished",
+  COMPLETED: "Completed",
   DROPPED: "Dropped",
 };
 
@@ -43,8 +43,16 @@ export function formatType(type: EntryTypeValue) {
   return typeLabels[type];
 }
 
-export function formatStatus(status: WatchStatusValue) {
+export function formatStatus(status: WatchStatusValue, type?: EntryTypeValue) {
+  if (type === "BOOK" && status === "WATCHING") {
+    return "Reading";
+  }
+
   return statusLabels[status];
+}
+
+export function formatRating(rating: number | null) {
+  return typeof rating === "number" ? `${rating.toFixed(1)} ★` : "No rating";
 }
 
 export function getPosterFallback(title: string) {

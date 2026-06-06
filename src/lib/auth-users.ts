@@ -11,6 +11,8 @@ export type AuthUserRecord = {
   publicId: string;
   username: string | null;
   passwordHash: string | null;
+  role: "USER" | "PRO" | "ADMIN";
+  isBanned: boolean;
 };
 
 function createBaseUsername(email?: string | null, name?: string | null) {
@@ -29,12 +31,14 @@ function mapAuthUser(row: Record<string, unknown>): AuthUserRecord {
     username: row.username === null ? null : String(row.username),
     passwordHash:
       row.passwordHash === null ? null : String(row.passwordHash),
+    role: row.role === "ADMIN" ? "ADMIN" : row.role === "PRO" ? "PRO" : "USER",
+    isBanned: Boolean(row.isBanned),
   };
 }
 
 export async function getAuthUserByEmail(email: string) {
   const result = await pgPool.query(
-    `select id, email, name, image, "publicId", username, "passwordHash"
+    `select id, email, name, image, "publicId", username, "passwordHash", role, "isBanned"
      from "User"
      where email = $1
      limit 1`,
@@ -68,7 +72,7 @@ export async function createCredentialUser(input: {
       const result = await pgPool.query(
         `insert into "User" ("id", "email", "name", "image", "emailVerified", "passwordHash", "publicId", "username", "createdAt")
          values ($1, $2, $3, $4, $5, $6, $7, $8, now())
-         returning id, email, name, image, "publicId", username, "passwordHash"`,
+         returning id, email, name, image, "publicId", username, "passwordHash", role, "isBanned"`,
         [
           randomUUID().replace(/-/g, "").slice(0, 25),
           input.email,

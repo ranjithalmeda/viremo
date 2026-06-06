@@ -1,8 +1,18 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getServerSession } from "next-auth";
 
-import { EntryCard } from "@/src/components/entry-card";
+import { PersonalizedDiarySections } from "@/src/components/personalized-diary-sections";
+import { ProfileSocialPanel } from "@/src/components/profile-social-panel";
 import { StatsBar } from "@/src/components/stats-bar";
-import { getPublicProfile } from "@/src/lib/data";
+import { UserAvatar } from "@/src/components/user-avatar";
+import { authOptions } from "@/src/lib/auth";
+import { getProfileSocialSummary, getPublicProfile } from "@/src/lib/data";
+import { formatRating } from "@/src/lib/watchlist";
+import {
+  getPreferenceStyle,
+  normalizePreferences,
+} from "@/src/lib/preferences";
 
 type ProfilePageProps = {
   params: Promise<{
@@ -12,7 +22,10 @@ type ProfilePageProps = {
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
   const { username: identifier } = await params;
-  const profile = await getPublicProfile(identifier);
+  const [profile, session] = await Promise.all([
+    getPublicProfile(identifier),
+    getServerSession(authOptions),
+  ]);
 
   if (!profile) {
     notFound();
@@ -23,58 +36,85 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     createdAt: entry.createdAt.toISOString(),
     updatedAt: entry.updatedAt.toISOString(),
   }));
+  const preferences = normalizePreferences(profile.preferences);
+  const preferenceStyle = getPreferenceStyle(preferences);
+  const social = await getProfileSocialSummary(
+    profile.id,
+    session?.user?.id ?? null,
+  );
+  const comments = profile.comments.map((comment) => ({
+    ...comment,
+    createdAt: comment.createdAt.toISOString(),
+  }));
+  const folders = profile.folders.map((folder) => ({
+    id: folder.id,
+    name: folder.name,
+    entryCount: folder.entries.length,
+    entries: folder.entries.map((folderEntry) => ({
+      id: folderEntry.id,
+      entry: {
+        ...folderEntry.entry,
+        createdAt: folderEntry.entry.createdAt.toISOString(),
+        updatedAt: folderEntry.entry.updatedAt.toISOString(),
+      },
+    })),
+  }));
   const memberSince = new Intl.DateTimeFormat("en", {
     month: "long",
     year: "numeric",
   }).format(profile.createdAt);
 
   return (
-    <div className="shell py-16 sm:py-20">
+    <div style={preferenceStyle} className="shell py-16 sm:py-20">
       <section className="space-y-10">
-        <div className="glass-strong rounded-[2rem] border border-slate-200/70 bg-white/95 p-8 shadow-xl sm:p-10">
+        <div className="glass-strong rounded-[2rem] border border-[var(--profile-border)] bg-[var(--profile-surface)] p-8 text-[var(--profile-text)] shadow-xl sm:p-10">
           <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-center">
-            <div className="rounded-[2rem] bg-gradient-to-br from-violet-600 to-blue-600 p-8 text-white shadow-lg">
-              <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-[1.8rem] bg-white/10 text-4xl font-bold text-white">
-                {profile.image ? (
-                  <img
-                    src={profile.image}
-                    alt={profile.name || profile.username || "Profile avatar"}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  (profile.name || profile.username || "W").charAt(0).toUpperCase()
-                )}
-              </div>
-              <p className="mt-8 text-sm uppercase tracking-[0.24em] text-violet-100/80">Public profile</p>
+            <div
+              className="rounded-[2rem] p-8 text-white shadow-lg"
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--profile-accent), rgba(15, 23, 42, 0.96))",
+              }}
+            >
+              <UserAvatar
+                name={profile.name}
+                username={profile.username}
+                publicId={profile.publicId}
+                image={profile.image}
+                avatarUrl={profile.avatarUrl}
+                size="xl"
+                className="bg-white/10 text-white"
+              />
+              <p className="mt-8 text-sm uppercase tracking-[0.24em] text-white/75">Public profile</p>
               <h1 className="mt-4 text-4xl font-semibold leading-tight">
                 {profile.name || "Anonymous watcher"}
               </h1>
-              <p className="mt-2 text-sm text-violet-100/80">@{profile.username}</p>
+              <p className="mt-2 text-sm text-white/75">@{profile.username}</p>
             </div>
 
             <div className="space-y-5">
               <div>
-                <p className="theme-muted text-sm uppercase tracking-[0.18em]">About this shelf</p>
-                <p className="theme-heading mt-3 text-3xl font-semibold">
+                <p className="text-sm uppercase tracking-[0.18em] text-[var(--profile-muted)]">About this shelf</p>
+                <p className="mt-3 text-3xl font-semibold text-[var(--profile-text)]">
                   A curated view of what matters to this watcher.
                 </p>
               </div>
-              <p className="theme-muted max-w-2xl text-base leading-7">
-                Browse public entries, discover the story behind each watch, and
-                see how this profile organizes movies, series, and anime.
+              <p className="max-w-2xl text-base leading-7 text-[var(--profile-muted)]">
+                {profile.bio ||
+                  "Browse public entries, discover the story behind each watch, and see how this profile organizes movies, series, and anime."}
               </p>
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-3xl border border-slate-200/70 bg-slate-50 p-4">
-                  <p className="text-3xl font-semibold text-slate-900">{entries.length}</p>
-                  <p className="mt-1 text-sm text-slate-600">Public titles</p>
+                <div className="rounded-3xl border border-[var(--profile-border)] bg-[var(--profile-surface-soft)] p-4">
+                  <p className="text-3xl font-semibold text-[var(--profile-text)]">{entries.length}</p>
+                  <p className="mt-1 text-sm text-[var(--profile-muted)]">Public titles</p>
                 </div>
-                <div className="rounded-3xl border border-slate-200/70 bg-slate-50 p-4">
-                  <p className="text-3xl font-semibold text-slate-900">{memberSince}</p>
-                  <p className="mt-1 text-sm text-slate-600">Member since</p>
+                <div className="rounded-3xl border border-[var(--profile-border)] bg-[var(--profile-surface-soft)] p-4">
+                  <p className="text-3xl font-semibold text-[var(--profile-text)]">{memberSince}</p>
+                  <p className="mt-1 text-sm text-[var(--profile-muted)]">Member since</p>
                 </div>
-                <div className="rounded-3xl border border-slate-200/70 bg-slate-50 p-4">
-                  <p className="text-3xl font-semibold text-slate-900">{profile.publicId}</p>
-                  <p className="mt-1 text-sm text-slate-600">Share ID</p>
+                <div className="rounded-3xl border border-[var(--profile-border)] bg-[var(--profile-surface-soft)] p-4">
+                  <p className="text-3xl font-semibold text-[var(--profile-text)]">{profile.publicId}</p>
+                  <p className="mt-1 text-sm text-[var(--profile-muted)]">Share ID</p>
                 </div>
               </div>
             </div>
@@ -83,17 +123,93 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
         <StatsBar entries={entries} />
 
+        <ProfileSocialPanel
+          profileUser={{
+            id: profile.id,
+            name: profile.name,
+            username: profile.username,
+            image: profile.image,
+            avatarUrl: profile.avatarUrl,
+            publicId: profile.publicId,
+          }}
+          viewerId={session?.user?.id ?? null}
+          isOwner={session?.user?.id === profile.id}
+          initialSocial={social}
+          initialComments={comments}
+        />
+
         {entries.length ? (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {entries.map((entry) => (
-              <EntryCard key={entry.id} entry={entry} />
-            ))}
-          </div>
+          <PersonalizedDiarySections
+            entries={entries}
+            preferences={preferences}
+            publicView
+          />
         ) : (
           <div className="glass rounded-[2rem] border border-slate-200/70 bg-white/95 p-10 text-center text-base text-slate-700 shadow-sm">
             This profile is set up, but there are no public entries yet.
           </div>
         )}
+
+        {folders.length ? (
+          <section className="space-y-5">
+            <div>
+              <p className="theme-muted text-sm uppercase tracking-[0.18em]">
+                Public folders
+              </p>
+              <h2 className="theme-heading mt-2 text-3xl font-semibold">
+                Curated collections
+              </h2>
+            </div>
+
+            <div className="grid gap-5 lg:grid-cols-2">
+              {folders.map((folder) => (
+                <Link
+                  key={folder.id}
+                  href={`/profile/${profile.username || profile.publicId}/folders/${folder.id}`}
+                  className="glass rounded-[2rem] border border-slate-200/70 bg-white/95 p-6 shadow-sm"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-2xl font-semibold text-slate-950">
+                        {folder.name}
+                      </h3>
+                      <p className="mt-1 text-sm text-slate-600">
+                        {folder.entryCount} entries
+                      </p>
+                    </div>
+                    <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                      Public
+                    </span>
+                  </div>
+
+                  <div className="mt-5 space-y-3">
+                    {folder.entries.slice(0, 4).map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-slate-950">
+                            {item.entry.title}
+                          </p>
+                          <p className="mt-1 text-xs text-slate-500">
+                            {item.entry.type}
+                          </p>
+                        </div>
+                        {item.entry.rating ? (
+                          <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700">
+                            {formatRating(item.entry.rating)}
+                          </span>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
       </section>
     </div>
   );

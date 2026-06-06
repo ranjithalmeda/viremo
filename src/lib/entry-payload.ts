@@ -53,10 +53,14 @@ function parseRating(value: unknown) {
     return parsed;
   }
 
-  if (!Number.isInteger(parsed.value) || parsed.value < 1 || parsed.value > 5) {
+  if (
+    parsed.value < 1 ||
+    parsed.value > 5 ||
+    Math.round(parsed.value * 2) !== parsed.value * 2
+  ) {
     return {
       ok: false as const,
-      error: "Rating must be a whole number between 1 and 5.",
+      error: "Rating must be between 1.0 and 5.0 in 0.5 steps.",
     };
   }
 

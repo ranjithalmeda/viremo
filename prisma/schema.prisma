@@ -7,62 +7,71 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  passwordHash  String?   @db.Text
-  publicId      String    @unique
-  username      String?   @unique
-  createdAt     DateTime  @default(now())
-  entries       Entry[]
-  accounts      Account[]
-  sessions      Session[]
+  id               String           @id @default(cuid())
+  name             String?
+  email            String?          @unique
+  image            String?
+  avatarUrl        String?
+  username         String?          @unique
+  bio              String?
+  role             Role             @default(USER)
+  isBanned         Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+  emailVerified    DateTime?
+  passwordHash     String?
+  preferences      Json             @default("{}")
+  publicId         String           @unique
+  accounts         Account[]
+  chatMessages     ChatMessage[]
+  entries          Entry[]
+  folders          Folder[]
+  followers        Follow[]         @relation("UserFollowers")
+  following        Follow[]         @relation("UserFollowing")
+  notifications    Notification[]   @relation("UserNotifications")
+  sentNotifications Notification[]  @relation("NotificationActors")
+  sentMessages     DirectMessage[]  @relation("SentMessages")
+  receivedMessages DirectMessage[]  @relation("ReceivedMessages")
+  profileComments  ProfileComment[] @relation("ProfileComments")
+  writtenComments  ProfileComment[] @relation("WrittenComments")
+  sessions         Session[]
+  tickets          Ticket[]
+  watchHistories   WatchHistory[]
+  aiUsage          AiUsage?
+  communityPosts   CommunityPost[]
+  communityReplies CommunityReply[]
 }
 
 model Entry {
-  id        String      @id @default(cuid())
-  userId    String
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title     String
-  type      EntryType
-  status    WatchStatus
-  rating    Int?
-  notes     String?
-  poster    String?
-  tmdbId    Int?
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-}
-
-enum EntryType {
-  MOVIE
-  SERIES
-  ANIME
-  BOOK
-}
-
-enum WatchStatus {
-  WATCHING
-  COMPLETED
-  DROPPED
+  id             String         @id @default(cuid())
+  userId         String
+  title          String
+  type           EntryType
+  status         WatchStatus
+  rating         Float?
+  notes          String?
+  poster         String?
+  tmdbId         Int?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folderEntries  FolderEntry[]
+  watchHistories WatchHistory[]
 }
 
 model Account {
-  id                String   @id @default(cuid())
+  id                String  @id @default(cuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?  @db.Text
-  access_token      String?  @db.Text
+  access_token      String?
+  refresh_token     String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?  @db.Text
+  id_token          String?
   session_state     String?
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -81,4 +90,227 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model WatchHistory {
+  id        String   @id @default(cuid())
+  entryId   String
+  entry     Entry    @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  watchedAt DateTime
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, watchedAt])
+  @@index([entryId])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      ChatRole
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Folder {
+  id        String        @id @default(cuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  isPublic  Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  entries   FolderEntry[]
+
+  @@index([userId, isPublic])
+  @@index([userId, updatedAt])
+}
+
+model FolderEntry {
+  id       String   @id @default(cuid())
+  folderId String
+  folder   Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  entryId  String
+  entry    Entry    @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  addedAt  DateTime @default(now())
+
+  @@unique([folderId, entryId])
+  @@index([entryId])
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+  follower    User     @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followingId])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  actorId   String?
+  type      NotificationType
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+  user      User             @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  actor     User?            @relation("NotificationActors", fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+  @@index([actorId])
+}
+
+enum NotificationType {
+  FOLLOW
+}
+
+model DirectMessage {
+  id          String   @id @default(cuid())
+  senderId    String
+  recipientId String
+  content     String
+  createdAt   DateTime @default(now())
+  readAt      DateTime?
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient   User     @relation("ReceivedMessages", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, readAt])
+  @@index([senderId, recipientId, createdAt])
+  @@index([recipientId, senderId, createdAt])
+}
+
+model ProfileComment {
+  id            String   @id @default(cuid())
+  profileUserId String
+  authorId      String
+  content       String
+  createdAt     DateTime @default(now())
+  profileUser   User     @relation("ProfileComments", fields: [profileUserId], references: [id], onDelete: Cascade)
+  author        User     @relation("WrittenComments", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([profileUserId, createdAt])
+  @@index([authorId])
+}
+
+model Ticket {
+  id           String         @id @default(cuid())
+  userId       String
+  subject      String
+  category     TicketCategory
+  description  String
+  reportedUser String?
+  status       TicketStatus   @default(OPEN)
+  adminReply   String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+}
+
+model AiUsage {
+  id      String   @id @default(cuid())
+  userId  String   @unique
+  count   Int      @default(0)
+  resetAt DateTime
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AppConfig {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model CommunityPost {
+  id          String           @id @default(cuid())
+  userId      String
+  title       String
+  description String
+  category    EntryType
+  imageUrls   String[]
+  youtubeUrl  String?
+  createdAt   DateTime         @default(now())
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replies     CommunityReply[]
+
+  @@index([category, createdAt])
+  @@index([userId, createdAt])
+}
+
+model CommunityReply {
+  id           String        @id @default(cuid())
+  postId       String
+  userId       String
+  content      String
+  upvotes      Int           @default(0)
+  isBestAnswer Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  post         CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([postId, createdAt])
+  @@index([userId, createdAt])
+}
+
+model HelpArticle {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  category    String
+  isPublished Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isPublished, category, order])
+  @@index([category, order])
+}
+
+enum Role {
+  USER
+  PRO
+  ADMIN
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+}
+
+enum TicketCategory {
+  BUG
+  INAPPROPRIATE_CONTENT
+  ACCOUNT_ISSUE
+  OTHER
+}
+
+enum EntryType {
+  MOVIE
+  SERIES
+  ANIME
+  BOOK
+}
+
+enum WatchStatus {
+  WATCHING
+  COMPLETED
+  DROPPED
+}
+
+enum ChatRole {
+  USER
+  ASSISTANT
 }

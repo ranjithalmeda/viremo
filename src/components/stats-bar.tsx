@@ -12,16 +12,18 @@ export function StatsBar({ entries }: { entries: EntryRecord[] }) {
     : "0.0";
 
   const stats = [
-    { label: "Total titles", value: entries.length },
+    { label: "Total titles", value: entries.length, accent: "var(--accent)" },
     {
       label: "Finished",
       value: entries.filter((entry) => entry.status === "COMPLETED").length,
+      accent: "var(--accent-gold)",
     },
     {
       label: "Watching",
       value: entries.filter((entry) => entry.status === "WATCHING").length,
+      accent: "var(--accent)",
     },
-    { label: "Avg. rating", value: averageRating },
+    { label: "Avg. rating", value: averageRating, accent: "var(--accent-gold)" },
   ];
 
   return (
@@ -34,11 +36,19 @@ export function StatsBar({ entries }: { entries: EntryRecord[] }) {
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted)]">
             {stat.label}
           </p>
-          <p className="theme-heading mt-3 text-4xl font-semibold tracking-[-0.04em]">
+          <p
+            className="mt-3 text-4xl font-semibold tracking-[-0.04em]"
+            style={{ color: stat.accent }}
+          >
             {stat.value}
           </p>
           <div className="mt-4 h-1.5 rounded-full bg-[var(--border)]">
-            <div className="h-full w-2/3 rounded-full bg-[linear-gradient(90deg,var(--accent),var(--accent-strong))]" />
+            <div
+              className="h-full w-2/3 rounded-full"
+              style={{
+                background: `linear-gradient(90deg, ${stat.accent}, var(--accent))`,
+              }}
+            />
           </div>
         </div>
       ))}

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
+import { ProfileSearchForm } from "@/src/components/profile-search-form";
 import { SearchClient } from "@/src/components/search-client";
 import { authOptions } from "@/src/lib/auth";
 
@@ -13,7 +14,10 @@ export default async function SearchPage() {
 
   return (
     <div className="shell py-10 sm:py-14">
-      <SearchClient />
+      <div className="mx-auto max-w-6xl space-y-8">
+        <ProfileSearchForm />
+        <SearchClient />
+      </div>
     </div>
   );
 }

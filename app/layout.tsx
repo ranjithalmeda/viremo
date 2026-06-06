@@ -3,6 +3,7 @@ import { Manrope, Space_Grotesk } from "next/font/google";
 
 import { Providers } from "@/src/components/providers";
 import { SiteHeader } from "@/src/components/site-header";
+import { ThemeInitializer } from "@/src/components/theme-initializer";
 import "./globals.css";
 
 const bodyFont = Manrope({
@@ -21,23 +22,6 @@ export const metadata: Metadata = {
     "Track every movie, series, and anime you finish, rate, revisit, or recommend.",
 };
 
-const themeScript = `
-(() => {
-  const storageKey = "viremo-theme";
-  const stored = window.localStorage.getItem(storageKey);
-  const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const theme =
-    stored === "light" || stored === "dark"
-      ? stored
-      : systemDark
-        ? "dark"
-        : "light";
-
-  document.documentElement.dataset.theme = theme;
-  document.documentElement.style.colorScheme = theme;
-})();
-`;
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -49,16 +33,16 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${bodyFont.variable} ${displayFont.variable} h-full antialiased`}
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
-      <body className="min-h-full">
+      <body className="min-h-full" suppressHydrationWarning>
         <Providers>
+          <ThemeInitializer />
           <div className="relative min-h-screen overflow-x-hidden">
             <div className="page-backdrop pointer-events-none absolute inset-0" />
-            <div className="relative flex min-h-screen flex-col">
+            <div className="relative min-h-screen">
               <SiteHeader />
-              <main className="flex-1">{children}</main>
+              <main className="min-h-screen pb-24 md:pb-0 md:pl-14">
+                {children}
+              </main>
             </div>
           </div>
         </Providers>
