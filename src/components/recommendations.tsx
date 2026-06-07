@@ -126,7 +126,7 @@ export function Recommendations() {
       </h2>
 
       {feedback && (
-        <div className="mb-4 rounded-2xl bg-[rgba(139,92,246,0.14)] px-4 py-3 text-sm text-[var(--accent)]">
+        <div className="mb-4 rounded-2xl bg-[rgba(200,168,233,0.22)] px-4 py-3 text-sm text-[var(--accent)]">
           {feedback}
         </div>
       )}
@@ -135,13 +135,13 @@ export function Recommendations() {
         {recommendations.map((rec) => (
           <div
             key={rec.id}
-            className="rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] p-4 transition hover:border-[rgba(139,92,246,0.65)] hover:shadow-md"
+            className="rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] p-4 transition hover:border-[var(--accent)] hover:shadow-md"
           >
             <div className="flex items-start justify-between gap-3 mb-2">
               <h3 className="flex-1 font-semibold text-[var(--foreground-strong)]">
                 {rec.title}
               </h3>
-              <span className="whitespace-nowrap rounded-full bg-[rgba(212,175,55,0.18)] px-2.5 py-1 text-xs font-semibold text-[var(--accent-gold)]">
+              <span className="whitespace-nowrap rounded-full bg-[var(--badge-bg)] px-2.5 py-1 text-xs font-semibold text-[var(--badge-text)]">
                 {rec.type}
               </span>
             </div>

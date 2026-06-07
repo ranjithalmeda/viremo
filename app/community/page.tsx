@@ -93,7 +93,7 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
             return (
             <article
               key={post.id}
-              className="rounded-[2rem] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-[rgba(139,92,246,0.65)] hover:shadow-lg"
+              className="rounded-[2rem] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:shadow-lg"
             >
               <Link href={profileHref} className="flex w-fit items-center gap-3 hover:underline">
                 <UserAvatar {...post.user} size="sm" />
@@ -116,7 +116,7 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
                 {post.description}
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
-                <span className="rounded-full bg-[rgba(212,175,55,0.18)] px-3 py-1 text-xs font-bold text-[var(--accent-gold)]">
+                <span className="rounded-full bg-[var(--badge-bg)] px-3 py-1 text-xs font-bold text-[var(--badge-text)]">
                   {formatType(post.category)}
                 </span>
                 <span className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-bold text-[var(--muted)]">

@@ -23,7 +23,7 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
       return stored;
     }
 
-    return "dark";
+    return "light";
   }
 
   function toggleTheme() {
@@ -46,7 +46,7 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
       {compact ? (
         <>
           <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[var(--surface-soft)] text-xs font-black text-[var(--foreground-strong)]">
-            ◐
+            T
           </span>
           <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-200 group-hover:max-w-40 group-hover:opacity-100">
             Theme

@@ -258,13 +258,13 @@ export function DashboardClient({
     <>
       <section className="space-y-6">
         {feedback ? (
-          <div className="rounded-3xl border border-[#FFBB94]/40 bg-[#852E4E] px-4 py-3 text-sm font-bold text-white">
+          <div className="rounded-3xl border border-[var(--accent-highlight)] bg-[var(--surface)] px-4 py-3 text-sm font-bold text-[var(--foreground-strong)]">
             {feedback}
           </div>
         ) : null}
 
         {featuredEntry ? (
-          <section className="relative min-h-[320px] overflow-hidden rounded-[2rem] border border-[#FFBB94]/35 bg-[#852E4E] shadow-[0_40px_90px_rgba(19,3,15,0.28)]">
+          <section className="relative min-h-[320px] overflow-hidden rounded-[2rem] border border-[var(--accent-highlight)] bg-[var(--surface)] shadow-[0_40px_90px_rgba(45,27,78,0.16)]">
             {featuredEntry.poster ? (
               <img
                 src={featuredEntry.poster}
@@ -272,33 +272,33 @@ export function DashboardClient({
                 className="absolute inset-0 h-full w-full object-cover opacity-35"
               />
             ) : null}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#4C1D3D] via-[#4C1D3D]/86 to-[#852E4E]/72" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[var(--bg-primary)] via-[var(--bg-primary)]/86 to-[var(--surface)]/72" />
             <div className="relative grid min-h-[320px] gap-6 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_190px] lg:items-end">
               <div className="max-w-3xl self-end">
-                <span className="inline-flex rounded-full bg-[#FFBB94] px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#4C1D3D]">
+                <span className="inline-flex rounded-full bg-[var(--badge-bg)] px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[var(--badge-text)]">
                   Featured entry
                 </span>
-                <h1 className="mt-5 text-4xl font-black leading-tight text-white sm:text-6xl">
+                <h1 className="mt-5 text-4xl font-black leading-tight text-[var(--foreground-strong)] sm:text-6xl">
                   {featuredEntry.title}
                 </h1>
-                <p className="mt-4 max-w-2xl text-sm leading-7 text-[#E1CBD7] sm:text-base">
+                <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--muted)] sm:text-base">
                   {featuredEntry.notes?.trim() ||
                     "Your latest diary highlight appears here with fast actions and a cinematic backdrop."}
                 </p>
                 <div className="mt-5 flex flex-wrap gap-2">
-                  <span className="rounded-full bg-[#FFBB94] px-3 py-1 text-xs font-black text-[#4C1D3D]">
+                  <span className="rounded-full bg-[var(--badge-bg)] px-3 py-1 text-xs font-black text-[var(--badge-text)]">
                     {formatType(featuredEntry.type)}
                   </span>
-                  <span className="rounded-full bg-[#FB9590] px-3 py-1 text-xs font-black text-[#4C1D3D]">
+                  <span className="rounded-full bg-[var(--accent-secondary)] px-3 py-1 text-xs font-black text-[var(--badge-text)]">
                     {formatStatus(featuredEntry.status, featuredEntry.type)}
                   </span>
-                  <span className="rounded-full border border-[#FFBB94]/60 px-3 py-1 text-xs font-bold text-[#FFBB94]">
+                  <span className="rounded-full border border-[var(--accent-highlight)] px-3 py-1 text-xs font-bold text-[var(--accent-highlight)]">
                     {formatRating(featuredEntry.rating)}
                   </span>
                 </div>
               </div>
 
-              <div className="hidden overflow-hidden rounded-[1.5rem] border border-[#FFBB94]/40 bg-[#A33757] shadow-2xl lg:block">
+              <div className="hidden overflow-hidden rounded-[1.5rem] border border-[var(--accent-highlight)] bg-[var(--surface-soft)] shadow-2xl lg:block">
                 {featuredEntry.poster ? (
                   <img
                     src={featuredEntry.poster}
@@ -306,7 +306,7 @@ export function DashboardClient({
                     className="aspect-[2/3] h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="grid aspect-[2/3] place-items-center text-6xl font-black text-white">
+                  <div className="grid aspect-[2/3] place-items-center text-6xl font-black text-[var(--foreground-strong)]">
                     {getPosterFallback(featuredEntry.title)}
                   </div>
                 )}
@@ -320,7 +320,7 @@ export function DashboardClient({
             <section className="rounded-[1.5rem] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_24px_55px_rgba(19,3,15,0.18)]">
               <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
                 <label className="block">
-                  <span className="mb-2 block text-sm font-bold text-white">
+                    <span className="mb-2 block text-sm font-bold text-[var(--foreground-strong)]">
                     Search diary
                   </span>
                   <input
@@ -394,8 +394,8 @@ export function DashboardClient({
                 ))}
               </section>
             ) : (
-              <section className="rounded-[1.5rem] border border-dashed border-[#FFBB94]/45 bg-[var(--surface)] p-10 text-center">
-                <h2 className="text-3xl font-black text-white">No entries found</h2>
+              <section className="rounded-[1.5rem] border border-dashed border-[var(--accent-highlight)] bg-[var(--surface)] p-10 text-center">
+                <h2 className="text-3xl font-black text-[var(--foreground-strong)]">No entries found</h2>
                 <p className="mt-3 text-sm leading-7 text-[var(--muted)]">
                   Try another filter or add a new title to your diary.
                 </p>
@@ -408,11 +408,11 @@ export function DashboardClient({
           <aside className="hidden space-y-5 xl:block">
             <section className="rounded-[1.5rem] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_24px_55px_rgba(19,3,15,0.18)]">
               <div className="flex items-center gap-3">
-                <div className="grid size-14 place-items-center rounded-2xl bg-[#FFBB94] text-xl font-black text-[#4C1D3D]">
+                <div className="grid size-14 place-items-center rounded-2xl bg-[var(--badge-bg)] text-xl font-black text-[var(--badge-text)]">
                   {(profile.name || profile.username || "V").charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="text-xl font-black text-white">
+                  <p className="text-xl font-black text-[var(--foreground-strong)]">
                     {profile.name || "Viewer"}
                   </p>
                   <p className="text-sm text-[var(--muted)]">
@@ -430,26 +430,26 @@ export function DashboardClient({
                 ].map(([label, value]) => (
                   <div
                     key={label}
-                    className="rounded-2xl border border-[#FFBB94]/20 bg-[#A33757] p-4"
+                    className="rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] p-4"
                   >
-                    <p className="text-3xl font-black text-[#FFBB94]">{value}</p>
-                    <p className="mt-1 text-sm font-semibold text-[#E1CBD7]">
+                    <p className="text-3xl font-black text-[var(--accent-highlight)]">{value}</p>
+                    <p className="mt-1 text-sm font-semibold text-[var(--muted)]">
                       {label}
                     </p>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-3 rounded-2xl border border-[#FFBB94]/20 bg-[#A33757] p-4">
-                <p className="text-sm font-semibold text-[#E1CBD7]">Average rating</p>
-                <p className="mt-1 text-4xl font-black text-[#FFBB94]">
+              <div className="mt-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] p-4">
+                <p className="text-sm font-semibold text-[var(--muted)]">Average rating</p>
+                <p className="mt-1 text-4xl font-black text-[var(--accent-highlight)]">
                   {averageRating}
                 </p>
               </div>
             </section>
 
             <section className="rounded-[1.5rem] border border-[var(--border)] bg-[var(--surface)] p-5">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-[#FFBB94]">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--accent-highlight)]">
                 Quick actions
               </p>
               <div className="mt-4 grid gap-3">
@@ -506,14 +506,14 @@ export function DashboardClient({
       />
 
       {folderEntry ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#4C1D3D]/70 px-4 py-8 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-[2rem] border border-[#FFBB94]/35 bg-[#852E4E] p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(26,16,37,0.7)] px-4 py-8 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-[2rem] border border-[var(--accent-highlight)] bg-[var(--surface)] p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.24em] text-[#FFBB94]">
+                <p className="text-xs font-black uppercase tracking-[0.24em] text-[var(--accent-highlight)]">
                   Add to folder
                 </p>
-                <h2 className="mt-3 text-2xl font-black text-white">
+                <h2 className="mt-3 text-2xl font-black text-[var(--foreground-strong)]">
                   {folderEntry.title}
                 </h2>
               </div>
@@ -528,12 +528,12 @@ export function DashboardClient({
 
             <div className="mt-6">
               {foldersLoading ? (
-                <div className="rounded-2xl bg-[#A33757] px-4 py-3 text-sm text-white">
+                <div className="rounded-2xl bg-[var(--surface-soft)] px-4 py-3 text-sm text-[var(--foreground-strong)]">
                   Loading folders...
                 </div>
               ) : folderOptions.length ? (
                 <label className="block">
-                  <span className="mb-2 block text-sm font-bold text-white">
+                  <span className="mb-2 block text-sm font-bold text-[var(--foreground-strong)]">
                     Folder
                   </span>
                   <select
@@ -549,8 +549,8 @@ export function DashboardClient({
                   </select>
                 </label>
               ) : (
-                <div className="rounded-2xl border border-dashed border-[#FFBB94]/45 bg-[#A33757] p-5 text-center">
-                  <p className="text-sm text-white">
+                <div className="rounded-2xl border border-dashed border-[var(--accent-highlight)] bg-[var(--surface-soft)] p-5 text-center">
+                  <p className="text-sm text-[var(--foreground-strong)]">
                     Create a folder first, then come back to add this entry.
                   </p>
                   <Link

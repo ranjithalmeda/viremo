@@ -10,7 +10,7 @@ export function ThemeInitializer() {
     const theme =
       stored === "light" || stored === "dark"
         ? stored
-        : "dark";
+        : "light";
 
     document.documentElement.dataset.theme = theme;
     document.documentElement.style.colorScheme = theme;

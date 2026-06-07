@@ -49,7 +49,7 @@ export function ProfileSearchForm({
 
   return (
     <div className="glass rounded-[1.8rem] p-6 sm:p-7">
-      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--accent-gold)]">
+      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--accent-highlight)]">
         Find a profile
       </p>
       <h2 className="theme-heading mt-3 text-2xl font-semibold">

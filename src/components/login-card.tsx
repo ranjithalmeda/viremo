@@ -119,7 +119,7 @@ export function LoginCard({ error }: LoginCardProps) {
 
   return (
     <div className="glass-strong mx-auto w-full max-w-md rounded-[2rem] p-8 shadow-xl sm:p-10">
-      <span className="inline-flex rounded-full bg-[rgba(139,92,246,0.14)] px-4 py-2 text-sm font-semibold text-[var(--accent)]">
+      <span className="inline-flex rounded-full bg-[rgba(200,168,233,0.22)] px-4 py-2 text-sm font-semibold text-[var(--accent)]">
         Email login
       </span>
       <h1 className="theme-heading mt-5 text-4xl font-semibold">

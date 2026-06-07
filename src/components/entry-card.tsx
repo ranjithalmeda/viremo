@@ -32,7 +32,7 @@ export function EntryCard({
   const updatedLabel = formatUpdatedAt(entry.updatedAt);
 
   return (
-    <article className="group grid min-h-[260px] overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_24px_55px_rgba(19,3,15,0.18)] transition hover:-translate-y-0.5 hover:border-[#FFBB94] sm:grid-cols-[148px_minmax(0,1fr)]">
+    <article className="group grid min-h-[260px] overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-[var(--surface)] shadow-[0_24px_55px_rgba(45,27,78,0.12)] transition hover:-translate-y-0.5 hover:border-[var(--accent-highlight)] sm:grid-cols-[148px_minmax(0,1fr)]">
       <div className="relative min-h-[260px] bg-[var(--bg-tertiary)]">
         {entry.poster ? (
           <img
@@ -50,19 +50,19 @@ export function EntryCard({
       <div className="flex min-w-0 flex-col justify-between gap-5 p-5">
         <div className="min-w-0 space-y-4">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-[#FFBB94] px-3 py-1 text-xs font-black text-[#4C1D3D]">
+            <span className="rounded-full bg-[var(--badge-bg)] px-3 py-1 text-xs font-black text-[var(--badge-text)]">
               {formatType(entry.type)}
             </span>
-            <span className="rounded-full bg-[#FB9590] px-3 py-1 text-xs font-black text-[#4C1D3D]">
+            <span className="rounded-full bg-[var(--accent-secondary)] px-3 py-1 text-xs font-black text-[var(--badge-text)]">
               {formatStatus(entry.status, entry.type)}
             </span>
-            <span className="rounded-full border border-[#FFBB94]/60 px-3 py-1 text-xs font-semibold text-[#FFBB94]">
+            <span className="rounded-full border border-[var(--accent-highlight)] px-3 py-1 text-xs font-semibold text-[var(--accent-highlight)]">
               {formatRating(entry.rating)}
             </span>
           </div>
 
           <div>
-            <h3 className="line-clamp-2 text-2xl font-black leading-tight text-white">
+            <h3 className="line-clamp-2 text-2xl font-black leading-tight text-[var(--foreground-strong)]">
               {entry.title}
             </h3>
             <p className="mt-1 text-sm text-[var(--muted)]">

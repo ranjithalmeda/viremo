@@ -60,7 +60,7 @@ export default async function MessagesPage() {
                 <Link
                   key={conversation.user.id}
                   href={`/messages/${conversation.user.id}`}
-                  className="block rounded-[2rem] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[rgba(139,92,246,0.65)] hover:shadow-lg"
+                  className="block rounded-[2rem] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:shadow-lg"
                 >
                   <div className="flex items-center gap-4">
                     <UserAvatar
@@ -106,8 +106,8 @@ export default async function MessagesPage() {
             })}
           </div>
         ) : (
-          <div className="rounded-[2rem] border border-dashed border-[rgba(139,92,246,0.45)] bg-[var(--surface)] p-10 text-center">
-            <div className="mx-auto grid size-16 place-items-center rounded-3xl bg-[rgba(139,92,246,0.14)] text-2xl font-black text-[var(--accent)]">
+          <div className="rounded-[2rem] border border-dashed border-[var(--accent)] bg-[var(--surface)] p-10 text-center">
+            <div className="mx-auto grid size-16 place-items-center rounded-3xl bg-[rgba(200,168,233,0.22)] text-2xl font-black text-[var(--accent)]">
               M
             </div>
             <h2 className="mt-5 text-2xl font-bold text-[var(--foreground-strong)]">

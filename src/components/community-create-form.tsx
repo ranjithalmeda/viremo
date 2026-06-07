@@ -44,7 +44,7 @@ export function CommunityCreateForm() {
       className="rounded-[2rem] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm"
     >
       <div className="flex flex-col gap-2 border-b border-[var(--border)] pb-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent-gold)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--accent-highlight)]">
           New request
         </p>
         <h2 className="text-2xl font-bold text-[var(--foreground-strong)]">

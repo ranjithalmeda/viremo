@@ -47,7 +47,7 @@ export function UserAvatar({
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-[rgba(139,92,246,0.14)] font-bold text-[var(--accent)] ring-1 ring-[rgba(212,175,55,0.32)]",
+        "flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-[rgba(200,168,233,0.22)] font-bold text-[var(--accent)] ring-1 ring-[var(--accent-highlight)]",
         sizeClasses[size],
         className,
       )}

@@ -17,7 +17,6 @@ type NavigationItem = {
 };
 
 const mainNavItems: NavigationItem[] = [
-  { href: "/", label: "Home", icon: "H" },
   { href: "/dashboard", label: "Diary", icon: "D" },
   { href: "/folders", label: "Folders", icon: "F" },
   { href: "/calendar", label: "Calendar", icon: "C" },
@@ -25,17 +24,10 @@ const mainNavItems: NavigationItem[] = [
   { href: "/messages", label: "Messages", icon: "M", badge: "messages" },
   { href: "/notifications", label: "Notifications", icon: "N", badge: "notifications" },
   { href: "/ai-chat", label: "AI Chat", icon: "AI" },
-  { href: "/search", label: "Find Users", icon: "S" },
+  { href: "/search", label: "Search", icon: "S" },
   { href: "/help", label: "Help", icon: "?" },
   { href: "/tickets", label: "Support", icon: "T" },
-];
-
-const mobileNavItems: NavigationItem[] = [
-  { href: "/dashboard", label: "Diary", icon: "D" },
-  { href: "/community", label: "Community", icon: "U" },
-  { href: "/messages", label: "Messages", icon: "M", badge: "messages" },
-  { href: "/search", label: "Find", icon: "S" },
-  { href: "/settings", label: "Settings", icon: "G" },
+  { href: "/following", label: "Following", icon: "W" },
 ];
 
 function isActive(pathname: string | null, href: string) {
@@ -46,7 +38,7 @@ function Badge({ count }: { count: number }) {
   if (count <= 0) return null;
 
   return (
-    <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-[#FFBB94] px-1.5 py-0.5 text-[10px] font-bold leading-none text-[#4C1D3D]">
+    <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--badge-bg)] px-1.5 py-0.5 text-[10px] font-black leading-none text-[var(--badge-text)]">
       {count > 99 ? "99+" : count}
     </span>
   );
@@ -54,7 +46,7 @@ function Badge({ count }: { count: number }) {
 
 function NavIcon({ children }: { children: React.ReactNode }) {
   return (
-    <span className="relative grid size-9 shrink-0 place-items-center rounded-2xl bg-[var(--surface-soft)] text-xs font-black text-white">
+    <span className="relative grid size-9 shrink-0 place-items-center rounded-2xl bg-[var(--surface-soft)] text-xs font-black text-[var(--foreground-strong)]">
       {children}
     </span>
   );
@@ -65,11 +57,15 @@ function SidebarLink({
   pathname,
   unreadMessages,
   unreadNotifications,
+  onNavigate,
+  expanded = false,
 }: {
   item: NavigationItem;
   pathname: string | null;
   unreadMessages: number;
   unreadNotifications: number;
+  onNavigate?: () => void;
+  expanded?: boolean;
 }) {
   const active = isActive(pathname, item.href);
   const badgeCount =
@@ -83,56 +79,45 @@ function SidebarLink({
     <Link
       href={item.href}
       title={item.label}
+      onClick={onNavigate}
       className={cn(
         "flex h-11 items-center gap-3 rounded-2xl px-2 text-sm font-semibold transition-all",
         active
-          ? "bg-[var(--accent)] text-white shadow-[0_14px_30px_rgba(220,88,109,0.28)]"
-          : "text-[var(--muted)] hover:bg-[var(--surface-soft)] hover:text-white",
+          ? "bg-[var(--accent)] text-[var(--accent-contrast)] shadow-[0_14px_30px_rgba(200,168,233,0.24)]"
+          : "text-[var(--muted)] hover:bg-[var(--surface-soft)] hover:text-[var(--foreground-strong)]",
       )}
     >
       <span
         className={cn(
           "relative grid size-9 shrink-0 place-items-center rounded-xl text-xs font-black",
-          active ? "bg-white/16 text-white" : "bg-[var(--surface-soft)] text-white",
+          active
+            ? "bg-white/20 text-[var(--accent-contrast)]"
+            : "bg-[var(--surface-soft)] text-[var(--foreground-strong)]",
         )}
       >
         {item.icon}
         <Badge count={badgeCount} />
       </span>
-      <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-200 group-hover:max-w-40 group-hover:opacity-100">
+      <span
+        className={cn(
+          "overflow-hidden whitespace-nowrap transition-all duration-200",
+          expanded
+            ? "max-w-40 opacity-100"
+            : "max-w-0 opacity-0 group-hover:max-w-40 group-hover:opacity-100",
+        )}
+      >
         {item.label}
       </span>
     </Link>
   );
 }
 
-function MobileLink({
-  item,
-  pathname,
-  unreadMessages,
-}: {
-  item: NavigationItem;
-  pathname: string | null;
-  unreadMessages: number;
-}) {
-  const active = isActive(pathname, item.href);
-
+function DrawerLink(props: Parameters<typeof SidebarLink>[0]) {
   return (
-    <Link
-      href={item.href}
-      className={cn(
-        "flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-bold",
-        active
-          ? "bg-[var(--accent)] text-white"
-          : "text-[var(--muted)] hover:bg-[var(--surface-soft)] hover:text-white",
-      )}
-    >
-      <span className="relative grid size-7 place-items-center rounded-xl text-xs font-black">
-        {item.icon}
-        {item.badge === "messages" ? <Badge count={unreadMessages} /> : null}
-      </span>
-      <span className="truncate">{item.label}</span>
-    </Link>
+    <SidebarLink
+      {...props}
+      onNavigate={props.onNavigate}
+    />
   );
 }
 
@@ -141,6 +126,7 @@ export function SiteHeader() {
   const { data: session, status } = useSession();
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const adminMode = pathname?.startsWith("/admin");
 
   useEffect(() => {
@@ -179,6 +165,10 @@ export function SiteHeader() {
     };
   }, [status, pathname, session?.user?.isBanned]);
 
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [pathname]);
+
   const visibleUnreadMessages = status === "authenticated" ? unreadMessages : 0;
   const visibleUnreadNotifications =
     status === "authenticated" ? unreadNotifications : 0;
@@ -186,8 +176,157 @@ export function SiteHeader() {
   const username =
     session?.user?.username || session?.user?.name || session?.user?.email;
 
+  const accountItems: NavigationItem[] = [
+    { href: "/settings", label: "Settings", icon: "G" },
+    ...(profileId
+      ? [{ href: `/profile/${profileId}`, label: "View Profile", icon: "P" }]
+      : []),
+    ...(session?.user?.role === "ADMIN"
+      ? [{ href: "/admin", label: "Admin", icon: "A" }]
+      : []),
+  ];
+
+  function closeDrawer() {
+    setDrawerOpen(false);
+  }
+
   return (
     <>
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--border)] bg-[var(--surface-strong)]/95 px-4 py-3 shadow-[0_12px_30px_rgba(45,27,78,0.12)] backdrop-blur md:hidden">
+        <div className="flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            className="grid size-11 place-items-center rounded-2xl bg-[var(--accent)] text-xl font-black text-[var(--accent-contrast)]"
+            aria-label="Open navigation menu"
+          >
+            ☰
+          </button>
+          <Link href="/" className="text-xl font-black tracking-[0.18em] text-[var(--foreground-strong)]">
+            VIREMO
+          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/notifications"
+              className="relative grid size-10 place-items-center rounded-2xl bg-[var(--surface-soft)] text-sm font-black text-[var(--foreground-strong)]"
+              aria-label="Notifications"
+            >
+              🔔
+              <Badge count={visibleUnreadNotifications} />
+            </Link>
+            {profileId ? (
+              <Link
+                href={`/profile/${profileId}`}
+                className="grid size-10 place-items-center rounded-2xl bg-[var(--surface-soft)] text-sm font-black text-[var(--foreground-strong)]"
+                aria-label="View profile"
+              >
+                👤
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className="grid size-10 place-items-center rounded-2xl bg-[var(--surface-soft)] text-sm font-black text-[var(--foreground-strong)]"
+                aria-label="Sign in"
+              >
+                👤
+              </Link>
+            )}
+          </div>
+        </div>
+      </header>
+
+      <div
+        className={cn(
+          "fixed inset-0 z-[60] bg-[#1A1025]/60 backdrop-blur-sm transition-opacity md:hidden",
+          drawerOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
+        )}
+        onClick={closeDrawer}
+      />
+
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-[70] flex w-[82vw] max-w-sm flex-col border-r border-[var(--border)] bg-[var(--surface-strong)] px-4 py-5 shadow-2xl transition-transform duration-300 md:hidden",
+          drawerOpen ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
+        <div className="mb-5 flex items-center justify-between">
+          <Link
+            href="/"
+            onClick={closeDrawer}
+            className="text-2xl font-black tracking-[0.18em] text-[var(--foreground-strong)]"
+          >
+            VIREMO
+          </Link>
+          <button
+            type="button"
+            onClick={closeDrawer}
+            className="grid size-10 place-items-center rounded-2xl bg-[var(--surface-soft)] text-sm font-black text-[var(--foreground-strong)]"
+            aria-label="Close navigation menu"
+          >
+            X
+          </button>
+        </div>
+
+        {status === "authenticated" ? (
+          <div className="mb-5 flex items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] p-3">
+            <UserAvatar
+              name={session.user.name}
+              username={session.user.username}
+              publicId={session.user.publicId}
+              image={session.user.image}
+              size="sm"
+              className="size-10"
+            />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-black text-[var(--foreground-strong)]">
+                {username}
+              </p>
+              <p className="text-xs font-semibold text-[var(--muted)]">
+                {session.user.role}
+              </p>
+            </div>
+          </div>
+        ) : null}
+
+        <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto">
+          {[...mainNavItems, ...accountItems].map((item) => (
+            <DrawerLink
+              key={item.href}
+              item={item}
+              pathname={pathname}
+              unreadMessages={visibleUnreadMessages}
+              unreadNotifications={visibleUnreadNotifications}
+              onNavigate={closeDrawer}
+              expanded
+            />
+          ))}
+        </nav>
+
+        <div className="mt-5 border-t border-[var(--border)] pt-4">
+          <ThemeToggle />
+          {status === "authenticated" ? (
+            <button
+              type="button"
+              onClick={() => {
+                closeDrawer();
+                void signOut({ callbackUrl: "/" });
+              }}
+              className="theme-button-secondary mt-3 w-full rounded-2xl px-4 py-3 text-sm font-black"
+            >
+              Sign out
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              onClick={closeDrawer}
+              className="theme-button-primary mt-3 flex w-full justify-center rounded-2xl px-4 py-3 text-sm font-black"
+            >
+              Sign in
+            </Link>
+          )}
+        </div>
+      </aside>
+
       <aside
         className={cn(
           "group fixed inset-y-0 left-0 z-50 hidden w-14 flex-col border-r shadow-[20px_0_60px_rgba(0,0,0,0.18)] transition-all duration-300 hover:w-56 md:flex",
@@ -199,10 +338,10 @@ export function SiteHeader() {
         <div className="flex h-full flex-col overflow-hidden px-2 py-4">
           <Link
             href="/"
-            className="mb-4 flex h-12 items-center gap-3 rounded-2xl px-1 text-white"
+            className="mb-4 flex h-12 items-center gap-3 rounded-2xl px-1 text-[var(--foreground-strong)]"
             title="Viremo"
           >
-            <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-[var(--accent)] text-lg font-black text-white shadow-[0_14px_30px_rgba(220,88,109,0.28)]">
+            <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-[var(--accent)] text-lg font-black text-[var(--accent-contrast)] shadow-[0_14px_30px_rgba(200,168,233,0.24)]">
               V
             </span>
             <span className="max-w-0 overflow-hidden text-2xl font-black tracking-tight opacity-0 transition-all duration-200 group-hover:max-w-36 group-hover:opacity-100">
@@ -221,7 +360,9 @@ export function SiteHeader() {
                 className="size-10"
               />
               <div className="min-w-0 max-w-0 overflow-hidden opacity-0 transition-all duration-200 group-hover:max-w-36 group-hover:opacity-100">
-                <p className="truncate text-sm font-bold text-white">{username}</p>
+                <p className="truncate text-sm font-bold text-[var(--foreground-strong)]">
+                  {username}
+                </p>
                 <p className="text-xs font-semibold text-[var(--muted)]">
                   {session.user.role}
                 </p>
@@ -245,37 +386,20 @@ export function SiteHeader() {
             <div className="mb-2 overflow-hidden rounded-2xl">
               <ThemeToggle compact />
             </div>
-            <SidebarLink
-              item={{ href: "/settings", label: "Settings", icon: "G" }}
-              pathname={pathname}
-              unreadMessages={0}
-              unreadNotifications={0}
-            />
-            {profileId ? (
+            {accountItems.map((item) => (
               <SidebarLink
-                item={{
-                  href: `/profile/${profileId}`,
-                  label: "View Profile",
-                  icon: "P",
-                }}
+                key={item.href}
+                item={item}
                 pathname={pathname}
                 unreadMessages={0}
                 unreadNotifications={0}
               />
-            ) : null}
-            {session?.user?.role === "ADMIN" ? (
-              <SidebarLink
-                item={{ href: "/admin", label: "Admin", icon: "A" }}
-                pathname={pathname}
-                unreadMessages={0}
-                unreadNotifications={0}
-              />
-            ) : null}
+            ))}
             {status === "authenticated" ? (
               <button
                 type="button"
                 onClick={() => signOut({ callbackUrl: "/" })}
-                className="mt-1 flex h-11 w-full items-center gap-3 rounded-2xl px-2 text-left text-sm font-semibold text-[var(--muted)] hover:bg-[var(--surface-soft)] hover:text-white"
+                className="mt-1 flex h-11 w-full items-center gap-3 rounded-2xl px-2 text-left text-sm font-semibold text-[var(--muted)] hover:bg-[var(--surface-soft)] hover:text-[var(--foreground-strong)]"
                 title="Sign out"
               >
                 <NavIcon>O</NavIcon>
@@ -294,17 +418,6 @@ export function SiteHeader() {
           </div>
         </div>
       </aside>
-
-      <nav className="fixed inset-x-3 bottom-3 z-50 flex gap-1 rounded-[1.5rem] border border-[var(--border)] bg-[var(--surface-strong)] p-1.5 shadow-[0_20px_55px_rgba(0,0,0,0.24)] md:hidden">
-        {mobileNavItems.map((item) => (
-          <MobileLink
-            key={item.href}
-            item={item}
-            pathname={pathname}
-            unreadMessages={visibleUnreadMessages}
-          />
-        ))}
-      </nav>
     </>
   );
 }

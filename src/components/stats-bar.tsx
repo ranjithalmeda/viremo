@@ -16,14 +16,14 @@ export function StatsBar({ entries }: { entries: EntryRecord[] }) {
     {
       label: "Finished",
       value: entries.filter((entry) => entry.status === "COMPLETED").length,
-      accent: "var(--accent-gold)",
+      accent: "var(--accent-highlight)",
     },
     {
       label: "Watching",
       value: entries.filter((entry) => entry.status === "WATCHING").length,
       accent: "var(--accent)",
     },
-    { label: "Avg. rating", value: averageRating, accent: "var(--accent-gold)" },
+    { label: "Avg. rating", value: averageRating, accent: "var(--accent-highlight)" },
   ];
 
   return (

@@ -40,7 +40,7 @@ export default function RootLayout({
             <div className="page-backdrop pointer-events-none absolute inset-0" />
             <div className="relative min-h-screen">
               <SiteHeader />
-              <main className="min-h-screen pb-24 md:pb-0 md:pl-14">
+              <main className="min-h-screen pt-20 md:pt-0 md:pl-14">
                 {children}
               </main>
             </div>
