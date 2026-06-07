@@ -1,8 +1,9 @@
 "use client";
 
-import type { Role } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+import type { Role } from "@/src/lib/domain-types";
 
 type AdminUserActionsProps = {
   userId: string;

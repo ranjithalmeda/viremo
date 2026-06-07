@@ -1,9 +1,9 @@
-import type { TicketCategory } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 import { authOptions } from "@/src/lib/auth";
 import { createTicketForUser, getTicketsForUser } from "@/src/lib/admin-data";
+import type { TicketCategory } from "@/src/lib/domain-types";
 
 const ticketCategories = new Set<TicketCategory>([
   "BUG",

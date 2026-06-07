@@ -1,5 +1,6 @@
-import type { Prisma, Role, TicketCategory, TicketStatus } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
+import type { Role, TicketCategory, TicketStatus } from "@/src/lib/domain-types";
 import { prisma } from "@/src/lib/prisma";
 
 export type AdminComment = Prisma.ProfileCommentGetPayload<{

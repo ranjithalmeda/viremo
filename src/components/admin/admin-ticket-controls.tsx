@@ -1,8 +1,9 @@
 "use client";
 
-import type { TicketStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+import type { TicketStatus } from "@/src/lib/domain-types";
 
 type AdminTicketControlsProps = {
   ticketId: string;

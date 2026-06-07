@@ -1,8 +1,8 @@
-import type { Role } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 import { requireAdminApi } from "@/src/lib/admin";
 import { deleteAdminUser, updateAdminUser } from "@/src/lib/admin-data";
+import type { Role } from "@/src/lib/domain-types";
 
 type AdminUserRouteContext = {
   params: Promise<{ id: string }>;

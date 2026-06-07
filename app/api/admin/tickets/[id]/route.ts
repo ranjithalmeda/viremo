@@ -1,8 +1,8 @@
-import type { TicketStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 import { requireAdminApi } from "@/src/lib/admin";
 import { updateAdminTicket } from "@/src/lib/admin-data";
+import type { TicketStatus } from "@/src/lib/domain-types";
 
 const ticketStatuses = new Set<TicketStatus>([
   "OPEN",

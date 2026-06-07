@@ -1,6 +1,7 @@
 import { prisma } from "@/src/lib/prisma";
-import type { ChatRole, Entry, Prisma } from "@prisma/client";
+import type { Entry, Prisma } from "@prisma/client";
 import { randomUUID } from "crypto";
+import type { ChatRole } from "@/src/lib/domain-types";
 import {
   normalizePreferences,
   serializePreferences,

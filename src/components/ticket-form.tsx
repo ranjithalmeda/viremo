@@ -1,8 +1,9 @@
 "use client";
 
-import type { TicketCategory } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+import type { TicketCategory } from "@/src/lib/domain-types";
 
 const categories: Array<{ value: TicketCategory; label: string }> = [
   { value: "BUG", label: "Bug Report" },
