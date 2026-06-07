@@ -17,43 +17,36 @@ type NavigationItem = {
 };
 
 const mainNavItems: NavigationItem[] = [
-  { href: "/", label: "Home", icon: "🏠" },
-  { href: "/dashboard", label: "Diary", icon: "📓" },
-  { href: "/folders", label: "Folders", icon: "📁" },
-  { href: "/calendar", label: "Calendar", icon: "📅" },
-  { href: "/community", label: "Community", icon: "👥" },
-  { href: "/messages", label: "Messages", icon: "💬", badge: "messages" },
-  {
-    href: "/notifications",
-    label: "Notifications",
-    icon: "🔔",
-    badge: "notifications",
-  },
-  { href: "/ai-chat", label: "AI Chat", icon: "🤖" },
-  { href: "/search", label: "Find Users", icon: "🔍" },
-  { href: "/help", label: "Help", icon: "❓" },
-  { href: "/tickets", label: "Support", icon: "🎫" },
-] as const;
+  { href: "/", label: "Home", icon: "H" },
+  { href: "/dashboard", label: "Diary", icon: "D" },
+  { href: "/folders", label: "Folders", icon: "F" },
+  { href: "/calendar", label: "Calendar", icon: "C" },
+  { href: "/community", label: "Community", icon: "U" },
+  { href: "/messages", label: "Messages", icon: "M", badge: "messages" },
+  { href: "/notifications", label: "Notifications", icon: "N", badge: "notifications" },
+  { href: "/ai-chat", label: "AI Chat", icon: "AI" },
+  { href: "/search", label: "Find Users", icon: "S" },
+  { href: "/help", label: "Help", icon: "?" },
+  { href: "/tickets", label: "Support", icon: "T" },
+];
 
 const mobileNavItems: NavigationItem[] = [
-  { href: "/dashboard", label: "Diary", icon: "📓" },
-  { href: "/community", label: "Community", icon: "👥" },
-  { href: "/messages", label: "Messages", icon: "💬", badge: "messages" },
-  { href: "/search", label: "Find", icon: "🔍" },
-  { href: "/settings", label: "Settings", icon: "⚙️" },
-] as const;
+  { href: "/dashboard", label: "Diary", icon: "D" },
+  { href: "/community", label: "Community", icon: "U" },
+  { href: "/messages", label: "Messages", icon: "M", badge: "messages" },
+  { href: "/search", label: "Find", icon: "S" },
+  { href: "/settings", label: "Settings", icon: "G" },
+];
 
 function isActive(pathname: string | null, href: string) {
   return href === "/" ? pathname === "/" : pathname?.startsWith(href);
 }
 
 function Badge({ count }: { count: number }) {
-  if (count <= 0) {
-    return null;
-  }
+  if (count <= 0) return null;
 
   return (
-    <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+    <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-[#FFBB94] px-1.5 py-0.5 text-[10px] font-bold leading-none text-[#4C1D3D]">
       {count > 99 ? "99+" : count}
     </span>
   );
@@ -61,7 +54,7 @@ function Badge({ count }: { count: number }) {
 
 function NavIcon({ children }: { children: React.ReactNode }) {
   return (
-    <span className="relative grid size-9 shrink-0 place-items-center rounded-2xl bg-[var(--surface-soft)] text-xs font-black text-[var(--foreground-strong)]">
+    <span className="relative grid size-9 shrink-0 place-items-center rounded-2xl bg-[var(--surface-soft)] text-xs font-black text-white">
       {children}
     </span>
   );
@@ -91,18 +84,16 @@ function SidebarLink({
       href={item.href}
       title={item.label}
       className={cn(
-        "group/link flex h-11 items-center gap-3 rounded-2xl px-2 text-sm font-semibold text-[var(--muted)] transition-all",
+        "flex h-11 items-center gap-3 rounded-2xl px-2 text-sm font-semibold transition-all",
         active
-          ? "bg-[var(--accent)] text-white shadow-[0_14px_30px_rgba(139,92,246,0.28)]"
-          : "hover:bg-[var(--surface-soft)] hover:text-[var(--foreground-strong)]",
+          ? "bg-[var(--accent)] text-white shadow-[0_14px_30px_rgba(220,88,109,0.28)]"
+          : "text-[var(--muted)] hover:bg-[var(--surface-soft)] hover:text-white",
       )}
     >
       <span
         className={cn(
           "relative grid size-9 shrink-0 place-items-center rounded-xl text-xs font-black",
-          active
-            ? "bg-white/16 text-white"
-            : "bg-[var(--surface-soft)] text-[var(--foreground-strong)]",
+          active ? "bg-white/16 text-white" : "bg-[var(--surface-soft)] text-white",
         )}
       >
         {item.icon}
@@ -133,7 +124,7 @@ function MobileLink({
         "flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-bold",
         active
           ? "bg-[var(--accent)] text-white"
-          : "text-[var(--muted)] hover:text-[var(--foreground-strong)]",
+          : "text-[var(--muted)] hover:bg-[var(--surface-soft)] hover:text-white",
       )}
     >
       <span className="relative grid size-7 place-items-center rounded-xl text-xs font-black">
@@ -150,6 +141,7 @@ export function SiteHeader() {
   const { data: session, status } = useSession();
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const adminMode = pathname?.startsWith("/admin");
 
   useEffect(() => {
     if (status === "authenticated" && session.user.isBanned) {
@@ -157,17 +149,13 @@ export function SiteHeader() {
       return;
     }
 
-    if (status !== "authenticated") {
-      return;
-    }
+    if (status !== "authenticated") return;
 
     let active = true;
 
     async function loadNotifications() {
       try {
-        const response = await fetch("/api/notifications", {
-          cache: "no-store",
-        });
+        const response = await fetch("/api/notifications", { cache: "no-store" });
         const data = await response.json();
 
         if (active && response.ok) {
@@ -191,8 +179,7 @@ export function SiteHeader() {
     };
   }, [status, pathname, session?.user?.isBanned]);
 
-  const visibleUnreadMessages =
-    status === "authenticated" ? unreadMessages : 0;
+  const visibleUnreadMessages = status === "authenticated" ? unreadMessages : 0;
   const visibleUnreadNotifications =
     status === "authenticated" ? unreadNotifications : 0;
   const profileId = session?.user?.username || session?.user?.publicId;
@@ -201,17 +188,24 @@ export function SiteHeader() {
 
   return (
     <>
-      <aside className="group fixed inset-y-0 left-0 z-50 hidden w-14 flex-col border-r border-[var(--border)] bg-[var(--surface-strong)] shadow-[20px_0_60px_rgba(0,0,0,0.12)] transition-all duration-300 hover:w-56 md:flex">
+      <aside
+        className={cn(
+          "group fixed inset-y-0 left-0 z-50 hidden w-14 flex-col border-r shadow-[20px_0_60px_rgba(0,0,0,0.18)] transition-all duration-300 hover:w-56 md:flex",
+          adminMode
+            ? "border-[rgba(134,168,207,0.35)] bg-[#26425A]"
+            : "border-[var(--border)] bg-[var(--surface-strong)]",
+        )}
+      >
         <div className="flex h-full flex-col overflow-hidden px-2 py-4">
           <Link
             href="/"
-            className="mb-4 flex h-12 items-center gap-3 rounded-2xl px-1 text-[var(--foreground-strong)]"
+            className="mb-4 flex h-12 items-center gap-3 rounded-2xl px-1 text-white"
             title="Viremo"
           >
-            <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-[var(--accent)] text-lg font-black text-white shadow-[0_14px_30px_rgba(139,92,246,0.28)]">
+            <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-[var(--accent)] text-lg font-black text-white shadow-[0_14px_30px_rgba(220,88,109,0.28)]">
               V
             </span>
-            <span className="max-w-0 overflow-hidden text-2xl font-black tracking-tight text-[var(--foreground-strong)] opacity-0 transition-all duration-200 group-hover:max-w-36 group-hover:opacity-100">
+            <span className="max-w-0 overflow-hidden text-2xl font-black tracking-tight opacity-0 transition-all duration-200 group-hover:max-w-36 group-hover:opacity-100">
               Viremo
             </span>
           </Link>
@@ -227,9 +221,7 @@ export function SiteHeader() {
                 className="size-10"
               />
               <div className="min-w-0 max-w-0 overflow-hidden opacity-0 transition-all duration-200 group-hover:max-w-36 group-hover:opacity-100">
-                <p className="truncate text-sm font-bold text-[var(--foreground-strong)]">
-                  {username}
-                </p>
+                <p className="truncate text-sm font-bold text-white">{username}</p>
                 <p className="text-xs font-semibold text-[var(--muted)]">
                   {session.user.role}
                 </p>
@@ -254,7 +246,7 @@ export function SiteHeader() {
               <ThemeToggle compact />
             </div>
             <SidebarLink
-              item={{ href: "/settings", label: "Settings", icon: "⚙️" }}
+              item={{ href: "/settings", label: "Settings", icon: "G" }}
               pathname={pathname}
               unreadMessages={0}
               unreadNotifications={0}
@@ -264,7 +256,7 @@ export function SiteHeader() {
                 item={{
                   href: `/profile/${profileId}`,
                   label: "View Profile",
-                  icon: "👤",
+                  icon: "P",
                 }}
                 pathname={pathname}
                 unreadMessages={0}
@@ -273,7 +265,7 @@ export function SiteHeader() {
             ) : null}
             {session?.user?.role === "ADMIN" ? (
               <SidebarLink
-                item={{ href: "/admin", label: "Admin", icon: "🛡️" }}
+                item={{ href: "/admin", label: "Admin", icon: "A" }}
                 pathname={pathname}
                 unreadMessages={0}
                 unreadNotifications={0}
@@ -283,17 +275,17 @@ export function SiteHeader() {
               <button
                 type="button"
                 onClick={() => signOut({ callbackUrl: "/" })}
-                className="mt-1 flex h-11 w-full items-center gap-3 rounded-2xl px-2 text-left text-sm font-semibold text-[var(--muted)] hover:bg-[var(--surface-soft)] hover:text-[var(--foreground-strong)]"
+                className="mt-1 flex h-11 w-full items-center gap-3 rounded-2xl px-2 text-left text-sm font-semibold text-[var(--muted)] hover:bg-[var(--surface-soft)] hover:text-white"
                 title="Sign out"
               >
-                <NavIcon>↪</NavIcon>
+                <NavIcon>O</NavIcon>
                 <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-200 group-hover:max-w-40 group-hover:opacity-100">
                   Sign out
                 </span>
               </button>
             ) : (
               <SidebarLink
-                item={{ href: "/login", label: "Sign in", icon: "↪" }}
+                item={{ href: "/login", label: "Sign in", icon: "I" }}
                 pathname={pathname}
                 unreadMessages={0}
                 unreadNotifications={0}

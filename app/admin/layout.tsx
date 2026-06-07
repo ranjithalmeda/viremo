@@ -3,5 +3,9 @@ export default function AdminLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <div className="min-h-screen border-t-4 border-[var(--accent)]">{children}</div>;
+  return (
+    <div className="admin-theme min-h-screen border-t-4 border-[var(--admin-bg-tertiary)]">
+      {children}
+    </div>
+  );
 }

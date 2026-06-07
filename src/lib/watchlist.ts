@@ -31,9 +31,7 @@ export const statusLabels: Record<WatchStatusValue, string> = {
   DROPPED: "Dropped",
 };
 
-export function typeFromMediaType(
-  mediaType?: string | null,
-): EntryTypeValue {
+export function typeFromMediaType(mediaType?: string | null): EntryTypeValue {
   if (mediaType === "movie") return "MOVIE";
   if (mediaType === "tv") return "SERIES";
   return "BOOK";
@@ -52,10 +50,9 @@ export function formatStatus(status: WatchStatusValue, type?: EntryTypeValue) {
 }
 
 export function formatRating(rating: number | null) {
-  return typeof rating === "number" ? `${rating.toFixed(1)} ★` : "No rating";
+  return typeof rating === "number" ? `${rating.toFixed(1)} / 5` : "No rating";
 }
 
 export function getPosterFallback(title: string) {
-  const letter = title.trim().charAt(0).toUpperCase() || "W";
-  return letter;
+  return title.trim().charAt(0).toUpperCase() || "W";
 }
