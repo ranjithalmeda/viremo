@@ -175,8 +175,44 @@ textarea {
 }
 
 @media (max-width: 767px) {
-  .mobile-font-scale :where(p, span, a, button, input, select, textarea, label, li, h1, h2, h3, h4) {
-    font-size: calc(1em * var(--mobile-font-scale, 1));
+  html {
+    font-size: calc(16px * var(--mobile-font-scale, 1));
+  }
+
+  a,
+  button,
+  [role="button"],
+  .glass,
+  .glass-strong,
+  article {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  a:active,
+  button:active,
+  [role="button"]:active {
+    transform: scale(0.98);
+  }
+
+  article:active,
+  .glass:active,
+  .glass-strong:active {
+    border-color: var(--accent-highlight);
+    box-shadow: 0 18px 42px rgba(200, 168, 233, 0.24);
+    transform: translateY(-2px);
+  }
+
+  a:hover,
+  button:hover,
+  [role="button"]:hover {
+    filter: brightness(1.03);
+  }
+
+  .theme-button-primary:active,
+  .theme-button-neutral:active,
+  .theme-button-secondary:active,
+  .theme-button-danger:active {
+    box-shadow: 0 12px 28px rgba(200, 168, 233, 0.28);
   }
 }
 

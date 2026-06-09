@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 
+import { ConfirmToast } from "@/src/components/confirm-toast";
+
 type FolderListItem = {
   id: string;
   name: string;
@@ -25,6 +27,8 @@ export function FoldersClient({
   const [editingPublic, setEditingPublic] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [folderPendingDelete, setFolderPendingDelete] =
+    useState<FolderListItem | null>(null);
 
   async function createFolder(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -111,15 +115,14 @@ export function FoldersClient({
     }
   }
 
-  async function deleteFolder(folder: FolderListItem) {
-    const confirmed = window.confirm(`Delete "${folder.name}"?`);
-    if (!confirmed) return;
+  async function deleteFolder() {
+    if (!folderPendingDelete) return;
 
     setSubmitting(true);
     setFeedback(null);
 
     try {
-      const response = await fetch(`/api/folders/${folder.id}`, {
+      const response = await fetch(`/api/folders/${folderPendingDelete.id}`, {
         method: "DELETE",
       });
       const data = await response.json();
@@ -128,8 +131,11 @@ export function FoldersClient({
         throw new Error(data.error || "Could not delete folder.");
       }
 
-      setFolders((current) => current.filter((item) => item.id !== folder.id));
+      setFolders((current) =>
+        current.filter((item) => item.id !== folderPendingDelete.id),
+      );
       setFeedback("Folder deleted.");
+      setFolderPendingDelete(null);
     } catch (error) {
       setFeedback(error instanceof Error ? error.message : "Could not delete folder.");
     } finally {
@@ -286,7 +292,7 @@ export function FoldersClient({
                         </button>
                         <button
                           type="button"
-                          onClick={() => deleteFolder(folder)}
+                          onClick={() => setFolderPendingDelete(folder)}
                           className="theme-button-danger rounded-full px-4 py-2 text-sm font-semibold"
                         >
                           Delete
@@ -304,6 +310,19 @@ export function FoldersClient({
           )}
         </div>
       </section>
+
+      <ConfirmToast
+        open={Boolean(folderPendingDelete)}
+        title="Delete folder?"
+        message={
+          folderPendingDelete
+            ? `"${folderPendingDelete.name}" will be removed. Entries inside it stay in your diary.`
+            : ""
+        }
+        loading={submitting}
+        onCancel={() => setFolderPendingDelete(null)}
+        onConfirm={deleteFolder}
+      />
     </div>
   );
 }

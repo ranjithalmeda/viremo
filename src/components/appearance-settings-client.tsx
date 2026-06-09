@@ -2,16 +2,18 @@
 
 import { useMemo, useState } from "react";
 
+import { applyMobileFontSize } from "@/src/components/mobile-font-initializer";
+import { UserAvatar } from "@/src/components/user-avatar";
 import {
   getPreferenceStyle,
   layoutModes,
   mobileFontSizes,
   normalizePreferences,
   profileThemes,
+  type MobileFontSize,
   type ProfileBlock,
   type UserPreferences,
 } from "@/src/lib/preferences";
-import { UserAvatar } from "@/src/components/user-avatar";
 
 const blockLabels: Record<ProfileBlock, string> = {
   recentlyWatched: "Recently Watched",
@@ -70,6 +72,11 @@ export function AppearanceSettingsClient({
     setFeedback(null);
   }
 
+  function updateMobileFontSize(size: MobileFontSize) {
+    applyMobileFontSize(size);
+    updatePreference("mobileFontSize", size);
+  }
+
   function reorderBlocks(targetBlock: ProfileBlock) {
     if (!draggingBlock || draggingBlock === targetBlock) return;
 
@@ -98,6 +105,7 @@ export function AppearanceSettingsClient({
       }
 
       setPreferences(normalizePreferences(data.preferences));
+      applyMobileFontSize(normalizePreferences(data.preferences).mobileFontSize);
       setFeedback("Appearance saved.");
     } catch (error) {
       setFeedback(error instanceof Error ? error.message : "Could not save appearance.");
@@ -234,7 +242,7 @@ export function AppearanceSettingsClient({
                 <button
                   key={size}
                   type="button"
-                  onClick={() => updatePreference("mobileFontSize", size)}
+                  onClick={() => updateMobileFontSize(size)}
                   className={`rounded-2xl border px-3 py-3 text-sm font-semibold ${
                     preferences.mobileFontSize === size
                       ? "border-[var(--accent)] bg-violet-50 text-violet-700"

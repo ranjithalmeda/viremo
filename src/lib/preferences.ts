@@ -76,7 +76,7 @@ const themeStyles: Record<
   },
 };
 
-const mobileFontScale: Record<MobileFontSize, string> = {
+export const mobileFontScale: Record<MobileFontSize, string> = {
   small: "0.94",
   medium: "1",
   large: "1.1",

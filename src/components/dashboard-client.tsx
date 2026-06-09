@@ -7,6 +7,7 @@ import {
   AddEntryModal,
   type EntryDraft,
 } from "@/src/components/add-entry-modal";
+import { ConfirmToast } from "@/src/components/confirm-toast";
 import { EntryCard } from "@/src/components/entry-card";
 import { Recommendations } from "@/src/components/recommendations";
 import { WatchHistoryCalendar } from "@/src/components/watch-history-calendar";
@@ -63,6 +64,9 @@ export function DashboardClient({
   const [foldersLoading, setFoldersLoading] = useState(false);
   const [folderSubmitting, setFolderSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [entryPendingDelete, setEntryPendingDelete] =
+    useState<EntryRecord | null>(null);
+  const [deletingEntry, setDeletingEntry] = useState(false);
   const [isPending, startTransition] = useTransition();
   const preferenceStyle = useMemo(
     () => getPreferenceStyle(preferences),
@@ -149,25 +153,33 @@ export function DashboardClient({
     setEditingEntry(null);
   }
 
-  async function deleteEntry(entry: EntryRecord) {
-    const confirmed = window.confirm(`Delete "${entry.title}" from your diary?`);
-    if (!confirmed) return;
+  async function confirmDeleteEntry() {
+    if (!entryPendingDelete) return;
 
-    const response = await fetch(`/api/entries/${entry.id}`, {
-      method: "DELETE",
-    });
+    setDeletingEntry(true);
+    setFeedback(null);
 
-    if (!response.ok) {
-      const data = await response.json();
-      setFeedback(data.error || "Delete failed.");
-      return;
+    try {
+      const response = await fetch(`/api/entries/${entryPendingDelete.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        setFeedback(data.error || "Delete failed.");
+        return;
+      }
+
+      startTransition(() => {
+        setEntries((current: EntryRecord[]) =>
+          current.filter((item: EntryRecord) => item.id !== entryPendingDelete.id),
+        );
+      });
+      setFeedback(`Deleted "${entryPendingDelete.title}".`);
+      setEntryPendingDelete(null);
+    } finally {
+      setDeletingEntry(false);
     }
-
-    startTransition(() => {
-      setEntries((current: EntryRecord[]) =>
-        current.filter((item: EntryRecord) => item.id !== entry.id),
-      );
-    });
   }
 
   async function openAddToFolder(entry: EntryRecord) {
@@ -397,7 +409,7 @@ export function DashboardClient({
                       setModalOpen(true);
                     }}
                     onAddToFolder={openAddToFolder}
-                    onDelete={deleteEntry}
+                    onDelete={setEntryPendingDelete}
                   />
                 ))}
               </section>
@@ -597,6 +609,19 @@ export function DashboardClient({
           Updating diary...
         </div>
       ) : null}
+
+      <ConfirmToast
+        open={Boolean(entryPendingDelete)}
+        title="Delete diary entry?"
+        message={
+          entryPendingDelete
+            ? `"${entryPendingDelete.title}" will be removed from your diary.`
+            : ""
+        }
+        loading={deletingEntry}
+        onCancel={() => setEntryPendingDelete(null)}
+        onConfirm={confirmDeleteEntry}
+      />
     </>
   );
 }
