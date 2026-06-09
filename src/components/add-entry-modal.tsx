@@ -74,9 +74,9 @@ export function AddEntryModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 py-8 backdrop-blur-sm">
-      <div className="glass-strong w-full max-w-2xl rounded-[2rem] border border-slate-200/70 bg-white/95 p-6 shadow-2xl sm:p-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-950/40 px-4 py-4 backdrop-blur-sm sm:items-center sm:py-8">
+      <div className="glass-strong flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] border border-slate-200/70 bg-white/95 shadow-2xl sm:max-h-[calc(100dvh-4rem)]">
+        <div className="flex flex-col gap-4 p-6 pb-4 sm:flex-row sm:items-start sm:justify-between sm:p-8 sm:pb-5">
           <div>
             <p className="pill theme-faint">
               {isEditing ? "Update entry" : "Add a title"}
@@ -98,7 +98,7 @@ export function AddEntryModal({
         </div>
 
         <form
-          className="mt-8 grid gap-4 sm:grid-cols-2"
+          className="grid min-h-0 flex-1 gap-4 overflow-y-auto px-6 pb-0 sm:grid-cols-2 sm:px-8"
           onSubmit={async (event) => {
             event.preventDefault();
             setSubmitting(true);
@@ -235,7 +235,7 @@ export function AddEntryModal({
             </div>
           ) : null}
 
-          <div className="sm:col-span-2 flex flex-col gap-3 sm:flex-row sm:justify-end">
+          <div className="sticky bottom-0 -mx-6 flex flex-col gap-3 border-t border-[var(--border)] bg-[var(--surface)] px-6 py-4 sm:col-span-2 sm:-mx-8 sm:flex-row sm:justify-end sm:px-8">
             <button
               type="button"
               onClick={onClose}

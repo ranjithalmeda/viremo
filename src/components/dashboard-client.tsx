@@ -10,7 +10,10 @@ import {
 import { EntryCard } from "@/src/components/entry-card";
 import { Recommendations } from "@/src/components/recommendations";
 import { WatchHistoryCalendar } from "@/src/components/watch-history-calendar";
-import type { UserPreferences } from "@/src/lib/preferences";
+import {
+  getPreferenceStyle,
+  type UserPreferences,
+} from "@/src/lib/preferences";
 import {
   entryTypes,
   formatRating,
@@ -45,6 +48,7 @@ type StatusFilter = "ALL" | WatchStatusValue;
 
 export function DashboardClient({
   initialEntries,
+  preferences,
   profile,
 }: DashboardClientProps) {
   const [entries, setEntries] = useState(initialEntries);
@@ -60,6 +64,10 @@ export function DashboardClient({
   const [folderSubmitting, setFolderSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const preferenceStyle = useMemo(
+    () => getPreferenceStyle(preferences),
+    [preferences],
+  );
 
   const filteredEntries = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -256,7 +264,7 @@ export function DashboardClient({
 
   return (
     <>
-      <section className="space-y-6">
+      <section style={preferenceStyle} className="mobile-font-scale space-y-6">
         {feedback ? (
           <div className="rounded-3xl border border-[var(--accent-highlight)] bg-[var(--surface)] px-4 py-3 text-sm font-bold text-[var(--foreground-strong)]">
             {feedback}

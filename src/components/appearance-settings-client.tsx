@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import {
   getPreferenceStyle,
   layoutModes,
+  mobileFontSizes,
   normalizePreferences,
   profileThemes,
   type ProfileBlock,
@@ -29,6 +30,12 @@ const layoutLabels = {
   grid: "Grid",
   list: "List",
   card: "Card",
+};
+
+const mobileFontLabels = {
+  small: "Small",
+  medium: "Default",
+  large: "Large",
 };
 
 export function AppearanceSettingsClient({
@@ -218,6 +225,31 @@ export function AppearanceSettingsClient({
             </div>
           </div>
 
+          <div>
+            <p className="mb-3 text-sm font-semibold text-slate-700">
+              Mobile font size
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {mobileFontSizes.map((size) => (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => updatePreference("mobileFontSize", size)}
+                  className={`rounded-2xl border px-3 py-3 text-sm font-semibold ${
+                    preferences.mobileFontSize === size
+                      ? "border-[var(--accent)] bg-violet-50 text-violet-700"
+                      : "border-slate-200 bg-slate-50 text-slate-700"
+                  }`}
+                >
+                  {mobileFontLabels[size]}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-xs leading-5 text-slate-500">
+              Applies on phone-sized screens only.
+            </p>
+          </div>
+
           <label className="block">
             <span className="mb-3 block text-sm font-semibold text-slate-700">
               Accent color
@@ -281,7 +313,7 @@ export function AppearanceSettingsClient({
 
       <section
         style={previewStyle}
-        className="overflow-hidden rounded-[2rem] border border-[var(--profile-border)] bg-[var(--profile-surface)] p-6 shadow-sm"
+        className="mobile-font-scale overflow-hidden rounded-[2rem] border border-[var(--profile-border)] bg-[var(--profile-surface)] p-6 shadow-sm"
       >
         <div className="rounded-[1.75rem] bg-[var(--profile-bg)] p-6 text-[var(--profile-text)]">
           <div className="flex items-center justify-between gap-4">

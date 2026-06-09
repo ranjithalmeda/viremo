@@ -98,7 +98,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   }).format(profile.createdAt);
 
   return (
-    <div style={preferenceStyle} className="shell py-16 sm:py-20">
+    <div style={preferenceStyle} className="mobile-font-scale shell py-16 sm:py-20">
       <section className="space-y-10">
         <div className="glass-strong rounded-[2rem] border border-[var(--profile-border)] bg-[var(--profile-surface)] p-8 text-[var(--profile-text)] shadow-xl sm:p-10">
           <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-center">

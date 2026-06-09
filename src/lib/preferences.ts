@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 
 export const layoutModes = ["grid", "list", "card"] as const;
 export const profileThemes = ["dark", "light", "warm", "minimal"] as const;
+export const mobileFontSizes = ["small", "medium", "large"] as const;
 export const profileBlocks = [
   "recentlyWatched",
   "favorites",
@@ -11,12 +12,14 @@ export const profileBlocks = [
 
 export type LayoutMode = (typeof layoutModes)[number];
 export type ProfileTheme = (typeof profileThemes)[number];
+export type MobileFontSize = (typeof mobileFontSizes)[number];
 export type ProfileBlock = (typeof profileBlocks)[number];
 
 export type UserPreferences = {
   layout: LayoutMode;
   theme: ProfileTheme;
   accentColor: string;
+  mobileFontSize: MobileFontSize;
   blocks: ProfileBlock[];
 };
 
@@ -24,6 +27,7 @@ export const defaultPreferences: UserPreferences = {
   layout: "grid",
   theme: "dark",
   accentColor: "#e63946",
+  mobileFontSize: "medium",
   blocks: ["recentlyWatched", "favorites", "watchlist"],
 };
 
@@ -72,6 +76,12 @@ const themeStyles: Record<
   },
 };
 
+const mobileFontScale: Record<MobileFontSize, string> = {
+  small: "0.94",
+  medium: "1",
+  large: "1.1",
+};
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -96,6 +106,11 @@ export function normalizePreferences(value: unknown): UserPreferences {
   const theme = profileThemes.includes(value.theme as ProfileTheme)
     ? (value.theme as ProfileTheme)
     : defaultPreferences.theme;
+  const mobileFontSize = mobileFontSizes.includes(
+    value.mobileFontSize as MobileFontSize,
+  )
+    ? (value.mobileFontSize as MobileFontSize)
+    : defaultPreferences.mobileFontSize;
   const blocks = Array.isArray(value.blocks)
     ? value.blocks.filter((block): block is ProfileBlock =>
         profileBlocks.includes(block as ProfileBlock),
@@ -107,6 +122,7 @@ export function normalizePreferences(value: unknown): UserPreferences {
     layout,
     theme,
     accentColor: normalizeAccentColor(value.accentColor),
+    mobileFontSize,
     blocks: uniqueBlocks.length ? uniqueBlocks : defaultPreferences.blocks,
   };
 }
@@ -128,5 +144,6 @@ export function getPreferenceStyle(preferences: UserPreferences) {
     "--profile-muted": theme.muted,
     "--profile-border": theme.border,
     "--profile-accent": preferences.accentColor,
+    "--mobile-font-scale": mobileFontScale[preferences.mobileFontSize],
   } as CSSProperties;
 }
