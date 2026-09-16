@@ -350,16 +350,24 @@ export function DashboardClient({
                     className="theme-input w-full rounded-2xl px-5 py-4 text-sm font-semibold outline-none"
                   />
                 </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingEntry(null);
-                    setModalOpen(true);
-                  }}
-                  className="theme-button-primary rounded-2xl px-5 py-4 text-sm font-black lg:self-end"
-                >
-                  Add entry
-                </button>
+                <div className="grid gap-2 sm:grid-cols-2 lg:self-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingEntry(null);
+                      setModalOpen(true);
+                    }}
+                    className="theme-button-primary rounded-2xl px-5 py-4 text-sm font-black"
+                  >
+                    Add entry
+                  </button>
+                  <a
+                    href="/api/export/diary-report"
+                    className="theme-button-secondary rounded-2xl px-5 py-4 text-center text-sm font-black"
+                  >
+                    Download PDF
+                  </a>
+                </div>
               </div>
 
               <div className="mt-5 space-y-3">
@@ -495,6 +503,12 @@ export function DashboardClient({
                 >
                   Manage folders
                 </Link>
+                <a
+                  href="/api/export/diary-report"
+                  className="theme-button-secondary rounded-2xl px-4 py-3 text-center text-sm font-black"
+                >
+                  Download PDF
+                </a>
                 {profileIdentifier ? (
                   <Link
                     href={`/profile/${profileIdentifier}`}
